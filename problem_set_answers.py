@@ -19,8 +19,6 @@ import scipy
 import scipy.stats
 import statsmodels.api as sm
 import sys
-from ggplot import *
-
 
 def hist_MWW_suitability(series1, series2, rORf='fog'):
     '''
@@ -52,14 +50,15 @@ def hist_MWW_suitability(series1, series2, rORf='fog'):
     plt.savefig(title+'.png', bbox_inches='tight')
     plt.close('all')
 
-def bar_plot_of_sums(data, feature, variable = 'ENTRIESn_hourly'):
+def bar_plot_mean_Entries(data, feature, variable = 'ENTRIESn_hourly'):
     '''
     bar chart of ENTRIESn_hourly by UNIT
     http://pandas.pydata.org/pandas-docs/stable/groupby.html
-    http://wiki.scipy.org/Cookbook/Matplotlib/BarCharts'''
-    UNIT_data = data[[feature, 'ENTRIESn_hourly']]
-    gby_UNIT = UNIT_data.groupby(feature, as_index=False)
-    gby_UNIT_sum = gby_UNIT.sum()
+    http://wiki.scipy.org/Cookbook/Matplotlib/BarCharts
+    '''
+    gby_UNIT_mean = data[[feature, 'ENTRIESn_hourly']].groupby(feature, as_index=False).mean()
+    x_axis = gby_UNIT_mean[feature]
+    y_axis = gby_UNIT_mean['ENTRIESn_hourly']
 
     # Ploting and saving figure
     plt.figure()
@@ -68,15 +67,16 @@ def bar_plot_of_sums(data, feature, variable = 'ENTRIESn_hourly'):
         xlocations = np.array(range(len(y_axis))) + 0.5
         width = 0.5
         plt.bar(xlocations, y_axis, width=width)
-        plt.title('BAR plot of '+feature+' vs the sum of '+variable)
+        title = 'BAR plot of '+feature+' vs mean('+variable+')'
     else:
         plt.scatter(x_axis, y_axis)
-        plt.title('Scatter plot of '+feature+' vs  the sum of '+variable)
+        title = 'Scatter plot of '+feature+' vs mean('+variable+')'
 
+    plt.title(title)
     plt.xlabel(feature)
     plt.ylabel(variable)
     plt.axis('tight')
-    plt.savefig('SUM plots of '+feature+' vs '+variable+'.png', bbox_inches='tight')
+    plt.savefig(title+'.png', bbox_inches='tight')
     plt.close('all')
 
 def mann_whitney_plus_means(series1, series2):

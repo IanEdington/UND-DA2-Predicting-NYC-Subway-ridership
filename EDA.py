@@ -46,10 +46,13 @@ data = pd.read_csv(r'turnstile_data_master_with_weather_dayofweek.csv')
 
 features_to_explore = ['UNIT', 'day_of_week', 'Hour', 'maxpressurei', 'maxdewpti', 'mindewpti', 'minpressurei', 'meandewpti', 'meanpressurei', 'fog', 'rain', 'meanwindspdi', 'mintempi', 'meantempi', 'maxtempi', 'precipi']
 
-### Plot the interesting factors against ENTRIESn_hourly
 
-for feature in features_to_explore:
-	a.bar_plot_avg_Entries(data, feature)
+### Plot the interesting factors against ENTRIESn_hourly
+# Figures generated are in dir EDA_figs
+
+#for feature in features_to_explore:
+#	a.bar_plot_mean_Entries(data, feature)
+
 
 # ### compare binary factors using Mann-Whitney statistic
 # bi_f = {
