@@ -16,18 +16,16 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import scipy
-#import scipy.stats
+import scipy.stats
 import statsmodels.api as sm
 import sys
 from ggplot import *
 
-def read_csv():
-    data = pd.read_csv(r'turnstile_data_master_with_weather.csv')
-        # data = pd.read_csv(r'turnstile_weather_v2.csv')
-    return data
 
-def plot_histogram(data):
+def hist_MWW_suitability(series1, series2, rORf='fog'):
     '''
+    Plots two histograms to determin if the Mann-Whitney U-test (MWW) is an appropiate statistical method. If the two overlapping Histograms are of similar distribution one of MWW's assumptions is met.
+
     consume: the turnstile_weather dataframe
 
     return: Two histograms on the same axes to show hourly entries when raining vs. when not raining.
@@ -37,12 +35,15 @@ def plot_histogram(data):
     '''
 
     plt.figure()
-#    data[data.rain==0]['ENTRIESn_hourly'].hist(bins=12, range=(0,6000), color='Blue', label='No Rain', stacked=True)
-#    data[data.rain==1]['ENTRIESn_hourly'].hist(bins=12, range=(0,6000), color='Green', label='Rain', stacked=True)
-#    title = 'Histogram of Subway entries per hour split by whether there it is raining or not'
-    data[data.fog==0]['ENTRIESn_hourly'].hist(bins=12, range=(0,6000), color='Blue', label='No Fog', stacked=True)
-    data[data.fog==1]['ENTRIESn_hourly'].hist(bins=12, range=(0,6000), color='Green', label='Fog', stacked=True)
-    title = 'Histogram of Subway entries per hour split by whether there is fog or not'
+
+    if rORf=='rain':
+        series1.hist(bins=12, range=(0,6000), color='Blue', label='No Rain', stacked=True)
+        series2.hist(bins=12, range=(0,6000), color='Green', label='Rain', stacked=True)
+        title = 'Histogram of Subway entries per hour split by whether there it is raining or not'
+    else:
+        series1.hist(bins=12, range=(0,6000), color='Blue', label='No Fog', stacked=True)
+        series2.hist(bins=12, range=(0,6000), color='Green', label='Fog', stacked=True)
+        title = 'Histogram of Subway entries per hour split by whether there is fog or not'
 
     plt.legend(prop={'size': 14})
     plt.xlabel('Subway entries per hour')
