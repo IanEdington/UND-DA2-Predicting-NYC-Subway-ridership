@@ -6,6 +6,7 @@ import matplotlib.mlab as mlab
 ### Analyze the binary features ['rain', 'fog', 'thunder']
 
 data = a.read_csv()
+data['day_of_week'] = pd.to_datetime(data['DATEn']).dt.dayofweek
 
 # ### What Features could be affecting ridership?
 # # all Features:
@@ -29,26 +30,6 @@ features = ['UNIT', 'DATEn', 'Hour', 'maxpressurei', 'maxdewpti', 'mindewpti', '
 
 for feature in features:
 	a.bar_plot_of_sums(data, feature)
-
-
-def hist_of_ENTRIESn_hourly_vs_feature(data):
-	"""
-	http://matplotlib.org/examples/statistics/histogram_demo_features.html
-	"""
-
-	# num_bins = 50
-	# the histogram of the data
-	n, bins, patches = plt.hist(data, normed=1, facecolor='green', alpha=0.5)
-	# add a 'best fit' line
-	y = mlab.normpdf(bins, mu, sigma)
-	plt.plot(bins, y, 'r--')
-	plt.xlabel('Smarts')
-	plt.ylabel('Probability')
-	plt.title(r'Histogram of IQ: $\mu=100$, $\sigma=15$')
-
-	# Tweak spacing to prevent clipping of ylabel
-	plt.subplots_adjust(left=0.15)
-	plt.show()
 
 # ### compare binary factors using Mann-Whitney statistic
 # bi_f = {
