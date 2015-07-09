@@ -20,35 +20,6 @@ import scipy.stats
 import statsmodels.api as sm
 import sys
 
-def hist_MWW_suitability(series1, series2, rORf='fog'):
-    '''
-    Plots two histograms to determin if the Mann-Whitney U-test (MWW) is an appropiate statistical method. If the two overlapping Histograms are of similar distribution one of MWW's assumptions is met.
-
-    consume: the turnstile_weather dataframe
-
-    return: Two histograms on the same axes to show hourly entries when raining vs. when not raining.
-
-    Reference:
-        http://pandas.pydata.org/pandas-docs/stable/visualization.html#histograms
-    '''
-
-    plt.figure()
-
-    if rORf=='rain':
-        series1.hist(bins=12, range=(0,6000), color='Blue', label='No Rain', stacked=True)
-        series2.hist(bins=12, range=(0,6000), color='Green', label='Rain', stacked=True)
-        title = 'Histogram of Subway entries per hour split by whether there it is raining or not'
-    else:
-        series1.hist(bins=12, range=(0,6000), color='Blue', label='No Fog', stacked=True)
-        series2.hist(bins=12, range=(0,6000), color='Green', label='Fog', stacked=True)
-        title = 'Histogram of Subway entries per hour split by whether there is fog or not'
-
-    plt.legend(prop={'size': 14})
-    plt.xlabel('Subway entries per hour')
-    plt.ylabel('Frequency of occurence')
-    plt.title(title)
-    plt.savefig(title+'.png', bbox_inches='tight')
-    plt.close('all')
 
 def bar_plot_mean_Entries(data, feature, variable = 'ENTRIESn_hourly'):
     '''
@@ -99,6 +70,36 @@ def mann_whitney_plus_means(series1, series2):
     U,p =scipy.stats.mannwhitneyu(series1, series2)
 
     return series1.mean(), series2.mean(), U, p
+
+def hist_MWW_suitability(series1, series2, rORf='fog'):
+    '''
+    Plots two histograms to determin if the Mann-Whitney U-test (MWW) is an appropiate statistical method. If the two overlapping Histograms are of similar distribution one of MWW's assumptions is met.
+
+    consume: the turnstile_weather dataframe
+
+    return: Two histograms on the same axes to show hourly entries when raining vs. when not raining.
+
+    Reference:
+        http://pandas.pydata.org/pandas-docs/stable/visualization.html#histograms
+    '''
+
+    plt.figure()
+
+    if rORf=='rain':
+        series1.hist(bins=12, range=(0,6000), color='Blue', label='No Rain', stacked=True)
+        series2.hist(bins=12, range=(0,6000), color='Green', label='Rain', stacked=True)
+        title = 'Histogram of Subway entries per hour split by whether there it is raining or not'
+    else:
+        series1.hist(bins=12, range=(0,6000), color='Blue', label='No Fog', stacked=True)
+        series2.hist(bins=12, range=(0,6000), color='Green', label='Fog', stacked=True)
+        title = 'Histogram of Subway entries per hour split by whether there is fog or not'
+
+    plt.legend(prop={'size': 14})
+    plt.xlabel('Subway entries per hour')
+    plt.ylabel('Frequency of occurence')
+    plt.title(title)
+    plt.savefig(title+'.png', bbox_inches='tight')
+    plt.close('all')
 
 def linear_regression(features, values):
     """

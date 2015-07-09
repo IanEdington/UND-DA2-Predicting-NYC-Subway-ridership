@@ -50,21 +50,28 @@ features_to_explore = ['UNIT', 'day_of_week', 'Hour', 'maxpressurei', 'maxdewpti
 ### Plot the interesting factors against ENTRIESn_hourly
 # Figures generated are in dir EDA_figs
 
-#for feature in features_to_explore:
-#	a.bar_plot_mean_Entries(data, feature)
+# for feature in features_to_explore:
+# 	a.bar_plot_mean_Entries(data, feature)
 
 
-# ### compare binary factors using Mann-Whitney statistic
-# bi_f = {
-# 	'title' :['mean with_rain', 'mean without_rain', 'Mann-Whitney U-statistic', 'Mann-Whitney p-value' ],
-# }
-# bi_f['rain'] = list(a.mann_whitney_plus_means(data[data.rain == 0], data[data.rain == 1]))
-# bi_f['fog'] = list(a.mann_whitney_plus_means(data[data.fog == 0], data[data.fog == 1]))
-# bi_f['thunder'] = list(a.mann_whitney_plus_means(data[data.thunder == 0], data[data.thunder == 1]))
+### compare binary factors using Mann-Whitney statistic
+# bi_f = {'title': ['mean with_rain',
+# 				  'mean without_rain',
+# 				  'Mann-Whitney U-statistic',
+# 				  'Mann-Whitney p-value' ]}
+# bi_f['rain'] = list(a.mann_whitney_plus_means(data[data.rain == 0]['ENTRIESn_hourly'], data[data.rain == 1]['ENTRIESn_hourly']))
+# bi_f['fog'] = list(a.mann_whitney_plus_means(data[data.fog == 0]['ENTRIESn_hourly'], data[data.fog == 1]['ENTRIESn_hourly']))
 # pprint.pprint (bi_f)
-# ### result from 'turnstile_data_master_with_weather.csv'
-# { 'title': ['mean with_rain', 'mean without_rain', 'Mann-Whitney U-statistic', 'Mann-Whitney p-value']
-#   'fog': [1083.4492820876781, 1154.6593496303688, 1189034717.5, 0.0000060915569104373036],
-#   'rain': [1090.278780151855, 1105.4463767458733, 1924409167.0, 0.024999912793489721],
-#  'thunder': [1095.3484778440481, nan, 0.0, 0.0],
-# }
+### result from 'turnstile_data_master_with_weather.csv'
+# {'title': ['mean with_rain',
+#            'mean without_rain',
+#            'Mann-Whitney U-statistic',
+#            'Mann-Whitney p-value'],
+#  'fog': [1083.4492820876781,
+#          1154.6593496303688,
+#          1189034717.5,
+#          6.0915569104373036e-06],
+#  'rain': [1090.278780151855,
+#           1105.4463767458733,
+#           1924409167.0,
+#           0.024999912793489721]}
