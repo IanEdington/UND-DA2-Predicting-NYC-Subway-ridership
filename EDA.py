@@ -1,7 +1,8 @@
-import analysis as a
+import problem_set_answers as a
 import pprint
-import matplotlib.pyplot as plt
 import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.mlab as mlab
 ### Analyze the binary features ['rain', 'fog', 'thunder']
 
 data = a.read_csv()
@@ -26,23 +27,28 @@ features = ['UNIT', 'DATEn', 'Hour', 'maxpressurei', 'maxdewpti', 'mindewpti', '
 ### Plot the interesting factors against ENTRIESn_hourly
 # plt.scatter(data['ENTRIESn_hourly'], data['rain'])
 
-### bar chart of ENTRIESn_hourly by UNIT
-	# http://pandas.pydata.org/pandas-docs/stable/groupby.html
-def bar_plot_of_sums(data, feature):
-	plt.figure()
-	UNIT_data = data[[feature, 'ENTRIESn_hourly']]
-	gby_UNIT = UNIT_data.groupby(feature, as_index=False)
-	gby_UNIT_sum = gby_UNIT.sum()
-	lables = gby_UNIT_sum[feature]
-	y_axis = gby_UNIT_sum['ENTRIESn_hourly']
-	xlocations = np.array(range(len(y_axis)))+0.5
-	width = 0.5
-	plt.bar(xlocations, y_axis, width=width)
-	plt.show()
-
 for feature in features:
-	bar_plot_of_sums(data, feature)
+	a.bar_plot_of_sums(data, feature)
 
+
+def hist_of_ENTRIESn_hourly_vs_feature(data):
+	"""
+	http://matplotlib.org/examples/statistics/histogram_demo_features.html
+	"""
+
+	# num_bins = 50
+	# the histogram of the data
+	n, bins, patches = plt.hist(data, normed=1, facecolor='green', alpha=0.5)
+	# add a 'best fit' line
+	y = mlab.normpdf(bins, mu, sigma)
+	plt.plot(bins, y, 'r--')
+	plt.xlabel('Smarts')
+	plt.ylabel('Probability')
+	plt.title(r'Histogram of IQ: $\mu=100$, $\sigma=15$')
+
+	# Tweak spacing to prevent clipping of ylabel
+	plt.subplots_adjust(left=0.15)
+	plt.show()
 
 # ### compare binary factors using Mann-Whitney statistic
 # bi_f = {

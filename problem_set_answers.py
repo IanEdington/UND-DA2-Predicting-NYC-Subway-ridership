@@ -2,13 +2,13 @@
 #   http://pandas.pydata.org/pandas-docs/stable/visualization.html#histograms
 #   http://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.mannwhitneyu.html
 #   http://docs.scipy.org/doc/numpy/reference/generated/numpy.mean.html
-#    http://statsmodels.sourceforge.net/0.5.0/generated/statsmodels.regression.linear_model.OLS.html
-#    http://statsmodels.sourceforge.net/0.5.0/generated/statsmodels.regression.linear_model.OLS.fit.html
-#    http://statsmodels.sourceforge.net/0.5.0/generated/statsmodels.regression.linear_model.RegressionResults.html
-#    http://www.itl.nist.gov/div898/handbook/pri/section2/pri24.htm
-#    http://docs.scipy.org/doc/numpy/reference/generated/numpy.mean.html
-#    http://docs.scipy.org/doc/numpy/reference/generated/numpy.sum.html
-#    https://pypi.python.org/pypi/ggplot/
+#   http://statsmodels.sourceforge.net/0.5.0/generated/statsmodels.regression.linear_model.OLS.html
+#   http://statsmodels.sourceforge.net/0.5.0/generated/statsmodels.regression.linear_model.OLS.fit.html
+#   http://statsmodels.sourceforge.net/0.5.0/generated/statsmodels.regression.linear_model.RegressionResults.html
+#   http://www.itl.nist.gov/div898/handbook/pri/section2/pri24.htm
+#   http://docs.scipy.org/doc/numpy/reference/generated/numpy.mean.html
+#   http://docs.scipy.org/doc/numpy/reference/generated/numpy.sum.html
+#   https://pypi.python.org/pypi/ggplot/
 
 
 
@@ -40,8 +40,37 @@ def plot_histogram(data):
 
     data[data.rain==0]['ENTRIESn_hourly'].hist(range=(0,6000), stacked=True, label='No Rain')
     data[data.rain==1]['ENTRIESn_hourly'].hist(range=(0,6000), stacked=True, label='Rain')
+    plt.savefig('SUM plots of '+feature+' vs '+variable+'.png', bbox_inches='tight')
+    plt.close('all')
 
-    return plt
+def bar_plot_of_sums(data, feature, variable = 'ENTRIESn_hourly'):
+    '''
+    bar chart of ENTRIESn_hourly by UNIT
+    http://pandas.pydata.org/pandas-docs/stable/groupby.html
+    http://wiki.scipy.org/Cookbook/Matplotlib/BarCharts'''
+    UNIT_data = data[[feature, 'ENTRIESn_hourly']]
+    gby_UNIT = UNIT_data.groupby(feature, as_index=False)
+    gby_UNIT_sum = gby_UNIT.sum()
+
+
+
+    # Ploting and saving figure
+    plt.figure()
+
+    if feature in ['UNIT', 'DATEn']:
+        xlocations = np.array(range(len(y_axis))) + 0.5
+        width = 0.5
+        plt.bar(xlocations, y_axis, width=width)
+        plt.title('BAR plot of '+feature+' vs the sum of '+variable)
+    else:
+        plt.scatter(x_axis, y_axis)
+        plt.title('Scatter plot of '+feature+' vs  the sum of '+variable)
+
+    plt.xlabel(feature)
+    plt.ylabel(variable)
+    plt.axis('tight')
+    plt.savefig('SUM plots of '+feature+' vs '+variable+'.png', bbox_inches='tight')
+    plt.close('all')
 
 def plot_factor_vs_ENTRIESn_hourly(data, factor):
     plt.figure()
@@ -210,9 +239,8 @@ def compute_r_squared(data, predictions):
     to see all the columns and data points included in the turnstile_weather
     dataframe.
 
-   However, due to the limitation of our Amazon EC2 server, we are giving you a random
+    However, due to the limitation of our Amazon EC2 server, we are giving you a random
     subset, about 1/3 of the actual data in the turnstile_weather dataframe.
     '''
-
     #plot = # your code here
     #return plot
