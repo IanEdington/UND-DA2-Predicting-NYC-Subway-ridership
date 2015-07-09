@@ -1,35 +1,55 @@
 import problem_set_answers as a
 import pprint
+import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.mlab as mlab
 ### Analyze the binary features ['rain', 'fog', 'thunder']
 
-data = a.read_csv()
-data['day_of_week'] = pd.to_datetime(data['DATEn']).dt.dayofweek
+######################
+### Wrangling data ###
+######################
 
-# ### What Features could be affecting ridership?
-# # all Features:
+#Read data into pandas from CSV
+#data = pd.read_csv(r'turnstile_data_master_with_weather.csv')
+# data = pd.read_csv(r'turnstile_weather_v2.csv')
+
+# Modity data to add a day of the week, then save to new CSV
+#data['day_of_week'] = pd.to_datetime(data['DATEn']).dt.dayofweek
+#data.to_csv(path_or_buf=r'turnstile_data_master_with_weather_dayofweek.csv')
+# Use the data with day of week already there
+data = pd.read_csv(r'turnstile_data_master_with_weather_dayofweek.csv')
+
+######################
+### Exploring data ###
+######################
+
+# ### What Features might be affecting ridership?
+
+# all possible Features:
 # print (data.columns.values.tolist())
-# #> ['Unnamed: 0', 'UNIT', 'DATEn', 'TIMEn', 'Hour', 'DESCn', 'ENTRIESn_hourly', 'EXITSn_hourly', 'maxpressurei', 'maxdewpti', 'mindewpti', 'minpressurei', 'meandewpti', 'meanpressurei', 'fog', 'rain', 'meanwindspdi', 'mintempi', 'meantempi', 'maxtempi', 'precipi', 'thunder']
+#> ['Unnamed: 0', 'Unnamed: 0.1', 'UNIT', 'DATEn', 'TIMEn', 'Hour', 'DESCn', 'ENTRIESn_hourly', 'EXITSn_hourly', 'maxpressurei', 'maxdewpti', 'mindewpti', 'minpressurei', 'meandewpti', 'meanpressurei', 'fog', 'rain', 'meanwindspdi', 'mintempi', 'meantempi', 'maxtempi', 'precipi', 'thunder', 'day_of_week']
 
-# # yes UNIT: using UNIT would tell us if their is a specific area that is being used more than another not weather related we want to predict ridership overall.
-# # yes DATEn would tell us if specific days are used more than others. This would be useful if we could seperate days of the week.
-# # yes TIMEn would be useful if it was grouped by hours
-# yes Hour same as TIMEn
-# No DESCn - is only ever REGULAR
-# No ENTRIESn_hourly - primary dependent variable
-# No EXITSn_hourly - secondary dependent variable
-# yes to all weather data
+# Which ones should we explore?
+# UNIT: YES. Using UNIT would tell us if their is a specific area that is being used more than another not weather related we want to predict ridership overall.
+# DATEn: NO. Would tell us if specific days are used more than others. This would be useful if we could seperate days of the week.(Done) Use day_of_week instead.
+# day_of_week: YES. this is DATEn in usable format
+# TIMEn: NO. Would be useful if it was grouped by hours. Use Hour instead.
+# Hour: YES. this is TIMEn in usable format
+# YES to all weather data except thunder:
 #     'maxpressurei', 'maxdewpti', 'mindewpti', 'minpressurei', 'meandewpti', 'meanpressurei', 'fog', 'rain', 'meanwindspdi', 'mintempi', 'meantempi', 'maxtempi', 'precipi'
-# No excet'thunder'
-features = ['UNIT', 'DATEn', 'Hour', 'maxpressurei', 'maxdewpti', 'mindewpti', 'minpressurei', 'meandewpti', 'meanpressurei', 'fog', 'rain', 'meanwindspdi', 'mintempi', 'meantempi', 'maxtempi', 'precipi']
+
+# DESCn: NO. It is only ever REGULAR
+# ENTRIESn_hourly: NO. primary dependent variable
+# EXITSn_hourly: NO. secondary dependent variable
+# thunder: NO. Only ever 0
+
+features_to_explore = ['UNIT', 'day_of_week', 'Hour', 'maxpressurei', 'maxdewpti', 'mindewpti', 'minpressurei', 'meandewpti', 'meanpressurei', 'fog', 'rain', 'meanwindspdi', 'mintempi', 'meantempi', 'maxtempi', 'precipi']
 
 ### Plot the interesting factors against ENTRIESn_hourly
-# plt.scatter(data['ENTRIESn_hourly'], data['rain'])
 
-for feature in features:
-	a.bar_plot_of_sums(data, feature)
+for feature in features_to_explore:
+	a.bar_plot_avg_Entries(data, feature)
 
 # ### compare binary factors using Mann-Whitney statistic
 # bi_f = {
