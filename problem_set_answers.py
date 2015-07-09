@@ -26,7 +26,7 @@ def read_csv():
         # data = pd.read_csv(r'turnstile_weather_v2.csv')
     return data
 
-def r_nor_entries_histogram(data):
+def plot_histogram(data):
     '''
     consume: the turnstile_weather dataframe
 
@@ -42,6 +42,11 @@ def r_nor_entries_histogram(data):
     data[data.rain==1]['ENTRIESn_hourly'].hist(range=(0,6000), stacked=True, label='Rain')
 
     return plt
+
+def plot_factor_vs_ENTRIESn_hourly(data, factor):
+    plt.figure()
+
+
 
 def mann_whitney_plus_means(df1, df2):
     '''
