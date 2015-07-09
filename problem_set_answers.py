@@ -93,9 +93,9 @@ def hist_of_ENTRIESn_hourly_vs_feature(data):
 
 
 
-def mann_whitney_plus_means(df1, df2):
+def mann_whitney_plus_means(series1, series2):
     '''
-    consume: two filtered turnstile_weather dataframes that you want to compare
+    consume: two series that you want to compare
         ie: data[data.rain == 1]
             data[data.rain == 0]
 
@@ -110,15 +110,9 @@ def mann_whitney_plus_means(df1, df2):
         http://docs.scipy.org/doc/numpy/reference/generated/numpy.mean.html
     '''
 
-    with_rain = df1['ENTRIESn_hourly']
-    without_rain = df2['ENTRIESn_hourly']
+    U,p =scipy.stats.mannwhitneyu(series1, series2)
 
-    with_rain_mean = with_rain.mean()
-    without_rain_mean = without_rain.mean()
-
-    U,p =scipy.stats.mannwhitneyu(with_rain, without_rain)
-
-    return with_rain_mean, without_rain_mean, U, p # leave this line for the grader
+    return series1.mean(), series2.mean(), U, p
 
 def linear_regression(features, values):
     """
