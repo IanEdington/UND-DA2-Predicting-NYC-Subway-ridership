@@ -19,7 +19,7 @@ import scipy
 #import scipy.stats
 import statsmodels.api as sm
 import sys
-#from ggplot import *
+from ggplot import *
 
 def read_csv():
     data = pd.read_csv(r'turnstile_data_master_with_weather.csv')
@@ -196,3 +196,31 @@ def compute_r_squared(data, predictions):
     return 1 - (((data-predictions)**2).sum())/(((data-np.mean(data))**2).sum())
 
 ###visualization
+    # Here are some suggestions for things to investigate and illustrate:
+    #  * Ridership by time of day or day of week
+    #  * How ridership varies based on Subway station (UNIT)
+    #  * Which stations have more exits or entries at different times of day
+    #   (You can use UNIT as a proxy for subway station.)
+    #   scatterplot, line plot, or histogram or boxplot with tails :(can't with ggplot python )
+
+
+def plot_weather_data(data):
+    '''
+    consume: turnstile_weather
+    returns: scatterplot of Average hourly entries by day of the week
+    '''
+
+    data['day_of_week'] = pd.to_datetime(data['DATEn']).dt.dayofweek
+#    plot = ggplot(data, aes('day_of_week', 'ENTRIESn_hourly')) + geom_point()
+
+# average of entries ploted against day of week
+    table = data.groupby('day_of_week', as_index=False).agg({'ENTRIESn_hourly': np.mean})
+#    table['Day of the WEEK'] = table['day_of_week'].apply(str)
+#    table.replace(to_replace=['0','1','2','3','4','5','6'], value=['Mon','Tue','Wed','Thur','Fri','Sat','Sun'], inplace=True)
+
+    plot = ggplot(table, aes('day_of_week', 'ENTRIESn_hourly')) +\
+    geom_point(color='steelblue', size=200) + xlim(0, 6) + ylim(0, 1500) +\
+    ggtitle("Average hourly entries by day of the week") +\
+    xlab("Days of the WEEK (0 = Monday, 6 = Sunday)") + ylab("Average hourly ENTRIES")
+
+    return plot
