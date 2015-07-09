@@ -81,8 +81,8 @@ def bar_plot_of_sums(data, feature, variable = 'ENTRIESn_hourly'):
 def mann_whitney_plus_means(series1, series2):
     '''
     consume: two series that you want to compare
-        ie: data[data.rain == 1]
-            data[data.rain == 0]
+        ie: data[data.rain == 1]['ENTRIESn_hourly']
+            data[data.rain == 0]['ENTRIESn_hourly']
 
     return: 1, 2, 3, 4
         1) the mean of entries of df1
