@@ -1,87 +1,56 @@
-'''
-    1: Just try the plot equation
-    2: how to filter by rain ref: problem set 2: 7 filter
-    3: how to plot data
-    4: making the data look better:
-        http://matplotlib.org/api/axes_api.html#matplotlib.axes.Axes.hist
-'''
+# Reference:
+#   http://pandas.pydata.org/pandas-docs/stable/visualization.html#histograms
+#   http://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.mannwhitneyu.html
+#   http://docs.scipy.org/doc/numpy/reference/generated/numpy.mean.html
+        http://statsmodels.sourceforge.net/0.5.0/generated/statsmodels.regression.linear_model.OLS.html
+        http://statsmodels.sourceforge.net/0.5.0/generated/statsmodels.regression.linear_model.OLS.fit.html
+        http://statsmodels.sourceforge.net/0.5.0/generated/statsmodels.regression.linear_model.RegressionResults.html
+    http://www.itl.nist.gov/div898/handbook/pri/section2/pri24.htm
+        http://docs.scipy.org/doc/numpy/reference/generated/numpy.mean.html
+        http://docs.scipy.org/doc/numpy/reference/generated/numpy.sum.html
+    https://pypi.python.org/pypi/ggplot/
+
+
 
 import numpy as np
-import pandas
+import pandas as pd
 import matplotlib.pyplot as plt
+import scipy
+#import scipy.stats
+import statsmodels.api as sm
+import sys
+#from ggplot import *
 
-def entries_histogram(turnstile_weather):
+def r_nor_entries_histogram(turnstile_weather):
     '''
-    Before we perform any analysis, it might be useful to take a
-    look at the data we're hoping to analyze. More specifically, let's
-    examine the hourly entries in our NYC subway data and determine what
-    distribution the data follows. This data is stored in a dataframe
-    called turnstile_weather under the ['ENTRIESn_hourly'] column.
+    consume: the turnstile_weather dataframe
 
-    Let's plot two histograms on the same axes to show hourly
-    entries when raining vs. when not raining. Here's an example on how
-    to plot histograms with pandas and matplotlib:
-    turnstile_weather['column_to_graph'].hist()
+    return: Two histograms on the same axes to show hourly entries when raining vs. when not raining.
 
-    Your histograph may look similar to bar graph in the instructor notes below.
-
-    You can read a bit about using matplotlib and pandas to plot histograms here:
-    http://pandas.pydata.org/pandas-docs/stable/visualization.html#histograms
-
-    You can see the information contained within the turnstile weather data here:
-    https://www.dropbox.com/s/meyki2wl9xfa7yk/turnstile_data_master_with_weather.csv
+    Reference:
+        http://pandas.pydata.org/pandas-docs/stable/visualization.html#histograms
     '''
 
     plt.figure()
 
-    turnstile_weather[turnstile_weather.rain==0]['ENTRIESn_hourly'].hist(range=(0,6000), stacked=True, label='No Rain') # your code here to plot a historgram for hourly entries when it is not raining
-    turnstile_weather[turnstile_weather.rain==1]['ENTRIESn_hourly'].hist(range=(0,6000), stacked=True, label='Rain') # your code here to plot a historgram for hourly entries when it is raining
+    turnstile_weather[turnstile_weather.rain==0]['ENTRIESn_hourly'].hist(range=(0,6000), stacked=True, label='No Rain')
+    turnstile_weather[turnstile_weather.rain==1]['ENTRIESn_hourly'].hist(range=(0,6000), stacked=True, label='Rain')
 
     return plt
 
-
-'''
-    1: start with means of each - worked correctly
-    2: now the hard part ;P Mann-Whitney
-    Everything worked correctly
-'''
-
-import numpy as np
-import scipy
-import scipy.stats
-import pandas
-
 def mann_whitney_plus_means(turnstile_weather):
     '''
-    This function will consume the turnstile_weather dataframe containing
-    our final turnstile weather data.
+    consume: the turnstile_weather dataframe
 
-    You will want to take the means and run the Mann Whitney U-test on the
-    ENTRIESn_hourly column in the turnstile_weather dataframe.
-
-    This function should return:
+    return: 1, 2, 3, 4
         1) the mean of entries with rain
         2) the mean of entries without rain
-        3) the Mann-Whitney U-statistic and p-value comparing the number of entries
-           with rain and the number of entries without rain
+        3) the Mann-Whitney U-statistic and
+        4) p-value comparing the number of entries with rain and the number of entries without rain
 
-    You should feel free to use scipy's Mann-Whitney implementation, and you
-    might also find it useful to use numpy's mean function.
-
-    Here are the functions' documentation:
-    http://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.mannwhitneyu.html
-    http://docs.scipy.org/doc/numpy/reference/generated/numpy.mean.html
-
-    You can look at the final turnstile weather data at the link below:
-    https://www.dropbox.com/s/meyki2wl9xfa7yk/turnstile_data_master_with_weather.csv
-    '''
-
-    '''
-    This function should return:
-        1) the mean of entries with rain
-        2) the mean of entries without rain
-        3) the Mann-Whitney U-statistic and p-value comparing the number of entries
-           with rain and the number of entries without rain
+    Reference:
+        http://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.mannwhitneyu.html
+        http://docs.scipy.org/doc/numpy/reference/generated/numpy.mean.html
     '''
 
     with_rain = turnstile_weather[turnstile_weather.rain == 1]['ENTRIESn_hourly']
@@ -94,40 +63,14 @@ def mann_whitney_plus_means(turnstile_weather):
 
     return with_rain_mean, without_rain_mean, U, p # leave this line for the grader
 
-
-'''
-from linear_regression exercise:
-    iter1: what is given?
-    iter2: copy tutorial to see if I can reproduce results
-        http://statsmodels.sourceforge.net/0.5.0/generated/statsmodels.regression.linear_model.OLS.html
-    iter3: is working now I just have to figure out how to make it give the right answer
-    iter4: changed values and features (x,y)
-    iter5: how do you get the intercepts?
-        http://statsmodels.sourceforge.net/0.5.0/generated/statsmodels.regression.linear_model.OLS.fit.html
-        http://statsmodels.sourceforge.net/0.5.0/generated/statsmodels.regression.linear_model.RegressionResults.html
-        found intercept by reading instructions
-    iter6: formating results for answer
-
-problem set:
-    iter1: test linear_regression
-'''
-
-import numpy as np
-import pandas
-import statsmodels.api as sm
-
-"""
-In this question, you need to:
-1) implement the linear_regression() procedure
-2) Select features (in the predictions procedure) and make predictions.
-
-"""
-
 def linear_regression(features, values):
     """
     Perform linear regression given a data set with an arbitrary number of features.
 
-    This can be the same code as in the lesson #3 exercise.
+    Reference:
+        http://statsmodels.sourceforge.net/0.5.0/generated/statsmodels.regression.linear_model.OLS.html
+        http://statsmodels.sourceforge.net/0.5.0/generated/statsmodels.regression.linear_model.OLS.fit.html
+        http://statsmodels.sourceforge.net/0.5.0/generated/statsmodels.regression.linear_model.RegressionResults.html
     """
 
     features = sm.add_constant(features)
@@ -203,7 +146,7 @@ def predictions(dataframe):
     features = dataframe[feature_list]
 
     # Add UNIT to features using dummy variables
-    dummy_units = pandas.get_dummies(dataframe['UNIT'], prefix='unit')
+    dummy_units = pd.get_dummies(dataframe['UNIT'], prefix='unit')
     features = features.join(dummy_units)
 
     # Values
@@ -218,19 +161,6 @@ def predictions(dataframe):
 
     predictions = intercept + np.dot(features_array, params)
     return predictions
-
-'''
-    1: use ENTRIESn_hourly for the comparison against the prediction
-        because that's what you are trying to predict.
-        -> delta seems normally distributed
-    2: try different bin sizes
-        -> bin = 20
-    3: limit range
-        -> range = (-10000, 10000)
-'''
-import numpy as np
-import scipy
-import matplotlib.pyplot as plt
 
 def plot_residuals(turnstile_weather, predictions):
     '''
@@ -259,24 +189,14 @@ Now:
     2: break it down explaining the steps
 '''
 
-import numpy as np
-import scipy
-import matplotlib.pyplot as plt
-import sys
-
 def compute_r_squared(data, predictions):
     '''
-    In exercise 5, we calculated the R^2 value for you. But why don't you try and
-    and calculate the R^2 value yourself.
+    consume: numpy list of original data points, numpy list of predicted data points
+    return: the coefficient of determination (R^2)
 
-    Given a list of original data points, and also a list of predicted data points,
-    write a function that will compute and return the coefficient of determination (R^2)
-    for this data.  numpy.mean() and numpy.sum() might both be useful here, but
-    not necessary.
-
-    Documentation about numpy.mean() and numpy.sum() below:
-    http://docs.scipy.org/doc/numpy/reference/generated/numpy.mean.html
-    http://docs.scipy.org/doc/numpy/reference/generated/numpy.sum.html
+    Reference:
+        http://docs.scipy.org/doc/numpy/reference/generated/numpy.mean.html
+        http://docs.scipy.org/doc/numpy/reference/generated/numpy.sum.html
     '''
 
     ### broken down ###
@@ -290,17 +210,9 @@ def compute_r_squared(data, predictions):
 
 ###visualization
 
-from pandas import *
-from ggplot import *
-
-def plot_weather_data(turnstile_weather):
+#def plot_weather_data(turnstile_weather):
     '''
-    You are passed in a dataframe called turnstile_weather.
-    Use turnstile_weather along with ggplot to make a data visualization
-    focused on the MTA and weather data we used in assignment #3.
-    You should feel free to implement something that we discussed in class
-    (e.g., scatterplots, line plots, or histograms) or attempt to implement
-    something more advanced if you'd like.
+    scatterplots, line plots, or histograms
 
     Here are some suggestions for things to investigate and illustrate:
      * Ridership by time of day or day of week
@@ -322,13 +234,10 @@ def plot_weather_data(turnstile_weather):
     subset, about 1/3 of the actual data in the turnstile_weather dataframe.
     '''
 
-    plot = # your code here
-    return plot
+#    plot = # your code here
+#    return plot
 
-from pandas import *
-from ggplot import *
-
-def plot_weather_data(turnstile_weather):
+#def plot_weather_data(turnstile_weather):
     '''
     plot_weather_data is passed a dataframe called turnstile_weather.
     Use turnstile_weather along with ggplot to make another data visualization
@@ -363,5 +272,5 @@ def plot_weather_data(turnstile_weather):
     subset, about 1/3 of the actual data in the turnstile_weather dataframe.
     '''
 
-    plot = # your code here
-    return plot
+    #plot = # your code here
+    #return plot
