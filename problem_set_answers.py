@@ -37,10 +37,18 @@ def plot_histogram(data):
     '''
 
     plt.figure()
+#    data[data.rain==0]['ENTRIESn_hourly'].hist(bins=12, range=(0,6000), color='Blue', label='No Rain', stacked=True)
+#    data[data.rain==1]['ENTRIESn_hourly'].hist(bins=12, range=(0,6000), color='Green', label='Rain', stacked=True)
+#    title = 'Histogram of Subway entries per hour split by whether there it is raining or not'
+    data[data.fog==0]['ENTRIESn_hourly'].hist(bins=12, range=(0,6000), color='Blue', label='No Fog', stacked=True)
+    data[data.fog==1]['ENTRIESn_hourly'].hist(bins=12, range=(0,6000), color='Green', label='Fog', stacked=True)
+    title = 'Histogram of Subway entries per hour split by whether there is fog or not'
 
-    data[data.rain==0]['ENTRIESn_hourly'].hist(range=(0,6000), stacked=True, label='No Rain')
-    data[data.rain==1]['ENTRIESn_hourly'].hist(range=(0,6000), stacked=True, label='Rain')
-    plt.savefig('SUM plots of '+feature+' vs '+variable+'.png', bbox_inches='tight')
+    plt.legend(prop={'size': 14})
+    plt.xlabel('Subway entries per hour')
+    plt.ylabel('Frequency of occurence')
+    plt.title(title)
+    plt.savefig(title+'.png', bbox_inches='tight')
     plt.close('all')
 
 def bar_plot_of_sums(data, feature, variable = 'ENTRIESn_hourly'):
@@ -51,8 +59,6 @@ def bar_plot_of_sums(data, feature, variable = 'ENTRIESn_hourly'):
     UNIT_data = data[[feature, 'ENTRIESn_hourly']]
     gby_UNIT = UNIT_data.groupby(feature, as_index=False)
     gby_UNIT_sum = gby_UNIT.sum()
-
-
 
     # Ploting and saving figure
     plt.figure()
@@ -71,27 +77,6 @@ def bar_plot_of_sums(data, feature, variable = 'ENTRIESn_hourly'):
     plt.axis('tight')
     plt.savefig('SUM plots of '+feature+' vs '+variable+'.png', bbox_inches='tight')
     plt.close('all')
-
-def hist_of_ENTRIESn_hourly_vs_feature(data):
-	"""
-	http://matplotlib.org/examples/statistics/histogram_demo_features.html
-	"""
-
-	# num_bins = 50
-	# the histogram of the data
-	n, bins, patches = plt.hist(data, normed=1, facecolor='green', alpha=0.5)
-	# add a 'best fit' line
-	y = mlab.normpdf(bins, mu, sigma)
-	plt.plot(bins, y, 'r--')
-	plt.xlabel('Smarts')
-	plt.ylabel('Probability')
-	plt.title(r'Histogram of IQ: $\mu=100$, $\sigma=15$')
-
-	# Tweak spacing to prevent clipping of ylabel
-	plt.subplots_adjust(left=0.15)
-	plt.show()
-
-
 
 def mann_whitney_plus_means(series1, series2):
     '''
