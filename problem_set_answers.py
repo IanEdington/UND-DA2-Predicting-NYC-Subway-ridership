@@ -10,8 +10,6 @@
 #   http://docs.scipy.org/doc/numpy/reference/generated/numpy.sum.html
 #   https://pypi.python.org/pypi/ggplot/
 
-
-
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -19,6 +17,7 @@ import scipy
 import scipy.stats
 import statsmodels.api as sm
 import sys
+from sklearn import datasets, linear_model
 
 
 def bar_plot_mean_Entries(data, feature, variable = 'ENTRIESn_hourly'):
@@ -101,7 +100,17 @@ def hist_MWW_suitability(series1, series2, rORf='fog'):
     plt.savefig(title+'.png', bbox_inches='tight')
     plt.close('all')
 
-def linear_regression(features, values):
+def UNIT_dummy_vars(data, values=None):
+    if values==None:
+        values = data.groupby('UNIT', as_index=False).agg({'ENTRIESn_hourly': 'mean'})
+        values['ENTRIESn_hourly'] = values['ENTRIESn_hourly'].astype(int)
+        values = values.set_index('UNIT')['ENTRIESn_hourly'].to_dict()
+    data['UNIT_dummy'] = data['UNIT'].replace(to_replace=values)
+
+    return data, values
+
+
+def OLS_linear_regression(features, values):
     """
     Perform linear regression given a data set with an arbitrary number of features.
 
@@ -121,8 +130,7 @@ def linear_regression(features, values):
 
     return intercept, params
 
-def predictions(data, feature_list = ['Hour', 'mintempi', 'meantempi', 'meanwindspdi', 'mindewpti', 'minpressurei', 'maxtempi', 'fog' ]):
-
+def predictions(data, feature_list = ['rain', 'fog']):
     '''
     Using the information stored in the dataframe, let's predict the ridership of
     the NYC subway using linear regression with gradient descent.
@@ -143,7 +151,7 @@ def predictions(data, feature_list = ['Hour', 'mintempi', 'meantempi', 'meanwind
     values_array = values.values
 
     # Perform linear regression
-    intercept, params = linear_regression(features_array, values_array)
+    intercept, params = OLS_linear_regression(features_array, values_array)
 
     predictions = intercept + np.dot(features_array, params)
     return predictions

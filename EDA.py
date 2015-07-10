@@ -20,8 +20,8 @@ import json
 # data['day_of_week'] = pd.to_datetime(data['DATEn']).dt.dayofweek
 # data.to_csv(path_or_buf=r'turnstile_data_working_copy.csv')
 #-- Use the data with day of week already there
-data = pd.read_csv(r'turnstile_data_working_copy.csv')
-del data['Unnamed: 0']
+# data = pd.read_csv(r'turnstile_data_working_copy.csv')
+# del data['Unnamed: 0']
 
 ######################
 ### Exploring data ###
@@ -96,15 +96,42 @@ fog = data[data.fog == 1]['ENTRIESn_hourly']
 #########################
 
 ### Prepare data for linear regression
--- Create dummy varriables for 'UNIT'
-UNIT_dummy = data.groupby('UNIT', as_index=False).agg({'ENTRIESn_hourly': 'mean'})
-UNIT_dummy['ENTRIESn_hourly'] = UNIT_dummy['ENTRIESn_hourly'].astype(int)
-UNIT_dummy = UNIT_dummy.set_index('UNIT')['ENTRIESn_hourly'].to_dict()
-data['UNIT_dummy'] = data['UNIT'].replace(to_replace=UNIT_dummy)
+#-- Create dummy varriables for 'UNIT'
+data, UNIT_dummy = a.UNIT_dummy_vars(data)
 
-# save the dummy variables used for reference
-with open('UNIT_dummy.json', 'w') as f:
+## save the dummy variables used for reference
+with open('UNIT_dummy.json', 'wr') as f:
     json.dump(UNIT_dummy, f)
 
 ## save over working file
 data.to_csv(path_or_buf=r'turnstile_data_working_copy.csv')
+
+## Add UNIT_dummy and day_of_week columns for test_data
+test_data = pd.read_csv(r'turnstile_weather_v2.csv')
+with open('UNIT_dummy.json') as f:
+    UNIT_dummy = json.load(f)
+test_data, UNIT_dummy = a.UNIT_dummy_vars(test_data, UNIT_dummy)
+test_data['day_of_week'] = pd.to_datetime(test_data['DATEn']).dt.dayofweek
+test_data.to_csv(path_or_buf=r'turnstile_weather_v2_working_copy.csv')
+
+## reload the data
+
+data = pd.read_csv(r'turnstile_data_working_copy.csv')
+del data['Unnamed: 0']
+test_data = pd.read_csv(r'turnstile_weather_v2_working_copy.csv')
+del test_data['Unnamed: 0']
+
+#-- Create numpy arrays
+values_array = data['ENTRIESn_hourly']
+test_data, UNIT_dummy = a.UNIT_dummy_vars(test_data, values=UNIT_dummy)
+test_values_array =
+
+### Test every variable independently
+#-- generate predictions
+#-- calculate r** using backup data
+
+
+### Test the best variable with one other variable at a time
+
+
+### Test Predictions against backup data
