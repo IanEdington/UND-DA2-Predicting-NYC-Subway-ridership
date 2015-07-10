@@ -4,21 +4,24 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.mlab as mlab
+import json
+
 ### Analyze the binary features ['rain', 'fog', 'thunder']
 
 ######################
 ### Wrangling data ###
 ######################
 
-#Read data into pandas from CSV
-#data = pd.read_csv(r'turnstile_data_master_with_weather.csv')
+#-- Read data into pandas from CSV
+# data = pd.read_csv(r'turnstile_data_master_with_weather.csv')
 # data = pd.read_csv(r'turnstile_weather_v2.csv')
 
-# Modity data to add a day of the week, then save to new CSV
-#data['day_of_week'] = pd.to_datetime(data['DATEn']).dt.dayofweek
-#data.to_csv(path_or_buf=r'turnstile_data_master_with_weather_dayofweek.csv')
-# Use the data with day of week already there
-data = pd.read_csv(r'turnstile_data_master_with_weather_dayofweek.csv')
+#-- Modity data to add a day of the week, then save to new CSV
+# data['day_of_week'] = pd.to_datetime(data['DATEn']).dt.dayofweek
+# data.to_csv(path_or_buf=r'turnstile_data_working_copy.csv')
+#-- Use the data with day of week already there
+data = pd.read_csv(r'turnstile_data_working_copy.csv')
+del data['Unnamed: 0']
 
 ######################
 ### Exploring data ###
@@ -87,3 +90,21 @@ fog = data[data.fog == 1]['ENTRIESn_hourly']
 	#           0.024999912793489721]}
 
 ###
+
+#########################
+### Linear Regression ###
+#########################
+
+### Prepare data for linear regression
+-- Create dummy varriables for 'UNIT'
+UNIT_dummy = data.groupby('UNIT', as_index=False).agg({'ENTRIESn_hourly': 'mean'})
+UNIT_dummy['ENTRIESn_hourly'] = UNIT_dummy['ENTRIESn_hourly'].astype(int)
+UNIT_dummy = UNIT_dummy.set_index('UNIT')['ENTRIESn_hourly'].to_dict()
+data['UNIT_dummy'] = data['UNIT'].replace(to_replace=UNIT_dummy)
+
+# save the dummy variables used for reference
+with open('UNIT_dummy.json', 'w') as f:
+    json.dump(UNIT_dummy, f)
+
+## save over working file
+data.to_csv(path_or_buf=r'turnstile_data_working_copy.csv')
