@@ -165,7 +165,7 @@ def plot_residuals(data, predictions):
     (data['ENTRIESn_hourly'] - predictions).hist(bins=20, range=(-10000,10000))
     return plt
 
-def compute_r_squared(data, predictions):
+def compute_r_squared(values, predictions):
     '''
     consume: numpy list of original data points, numpy list of predicted data points
     return: the coefficient of determination (R^2)
@@ -176,13 +176,13 @@ def compute_r_squared(data, predictions):
     '''
 
     ### broken down ###
-    # numerator = ((data-predictions)**2).sum()
-    # denominator = ((data-np.mean(data))**2).sum()
+    # numerator = ((values-predictions)**2).sum()
+    # denominator = ((values-np.mean(values))**2).sum()
     # r_squared = 1 - numerator/denominator
     # return r_squared
 
     # one liner equation
-    return 1 - (((data-predictions)**2).sum())/(((data-np.mean(data))**2).sum())
+    return 1 - (((values-predictions)**2).sum())/(((values-np.mean(values))**2).sum())
 
 ###visualization
     # Here are some suggestions for things to investigate and illustrate:

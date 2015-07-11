@@ -6,8 +6,6 @@ import matplotlib.pyplot as plt
 import matplotlib.mlab as mlab
 import json
 
-### Analyze the binary features ['rain', 'fog', 'thunder']
-
 ######################
 ### Wrangling data ###
 ######################
@@ -47,7 +45,7 @@ import json
 # EXITSn_hourly: NO. secondary dependent variable
 # thunder: NO. Only ever 0
 
-features_to_explore = ['UNIT', 'day_of_week', 'Hour', 'maxpressurei', 'maxdewpti', 'mindewpti', 'minpressurei', 'meandewpti', 'meanpressurei', 'fog', 'rain', 'meanwindspdi', 'mintempi', 'meantempi', 'maxtempi', 'precipi']
+# features_to_explor = ['UNIT', 'day_of_week', 'Hour', 'maxpressurei', 'maxdewpti', 'mindewpti', 'minpressurei', 'meandewpti', 'meanpressurei', 'fog', 'rain', 'meanwindspdi', 'mintempi', 'meantempi', 'maxtempi', 'precipi']
 
 
 ### Plot the interesting factors against ENTRIESn_hourly
@@ -59,10 +57,10 @@ features_to_explore = ['UNIT', 'day_of_week', 'Hour', 'maxpressurei', 'maxdewpti
 
 ### Looking at only the binary factors (Rain and Fog)
 #-- Select out the two sections for each one:
-no_rain = data[data.rain == 0]['ENTRIESn_hourly']
-rain = data[data.rain == 1]['ENTRIESn_hourly']
-no_fog = data[data.fog == 0]['ENTRIESn_hourly']
-fog = data[data.fog == 1]['ENTRIESn_hourly']
+# no_rain = data[data.rain = ]['ENTRIESn_hourly']
+# rain = data[data.rain = ]['ENTRIESn_hourly']
+# no_fog = data[data.fog = ]['ENTRIESn_hourly']
+# fog = data[data.fog = ]['ENTRIESn_hourly']
 
 #-- Test selection: make a hist of the data
 # a.hist_MWW_suitability(no_rain, rain, rORf='fog')
@@ -95,24 +93,37 @@ fog = data[data.fog == 1]['ENTRIESn_hourly']
 ### Linear Regression ###
 #########################
 
-### Prepare data for linear regression
+### Prepare data for linear regression ###
 #-- Create dummy varriables for 'UNIT'
-data, UNIT_dummy = a.UNIT_dummy_vars(data)
+# data, UNIT_dummy = a.UNIT_dummy_vars(data)
 
 ## save the dummy variables used for reference
-with open('UNIT_dummy.json', 'wr') as f:
-    json.dump(UNIT_dummy, f)
+# with open('UNIT_dummy.json', 'wr') as f:
+#     json.dump(UNIT_dummy, f)
 
 ## save over working file
-data.to_csv(path_or_buf=r'turnstile_data_working_copy.csv')
+# data['day_of_week'] = pd.to_datetime(aa['DATEn']).dt.dayofweek
+# data.to_csv(path_or_buf=r'turnstile_data_working_copy.csv')
 
 ## Add UNIT_dummy and day_of_week columns for test_data
-test_data = pd.read_csv(r'turnstile_weather_v2.csv')
-with open('UNIT_dummy.json') as f:
-    UNIT_dummy = json.load(f)
-test_data, UNIT_dummy = a.UNIT_dummy_vars(test_data, UNIT_dummy)
-test_data['day_of_week'] = pd.to_datetime(test_data['DATEn']).dt.dayofweek
-test_data.to_csv(path_or_buf=r'turnstile_weather_v2_working_copy.csv')
+# test_data = pd.read_csv(r'turnstile_weather_v2.csv')
+# with open('UNIT_dummy.json') as f:
+#     UNIT_dummy = json.load(f)
+# test_data, UNIT_dummy = a.UNIT_dummy_vars(test_data, UNIT_dummy)
+# test_aa['day_of_week'] =d.to_datetime(test_aa['DATEn']).dt.dayofweek# change hour to Hour so data & test_data match
+# test_data = test_data.rename(columns={'hour': 'Hour'})
+# test_data = test_data.rename(columns={'meanwspdi': 'meanwindspdi'})
+# test_data.to_csv(path_or_buf = r'turnstile_weather_v2_working_copy.csv')
+
+
+### Find the right features to use
+
+#-- List of features to explore
+## The following columns were removed due to lack of test data: 'maxpressurei', 'maxdewpti', 'mintempi',  'mindewpti', 'minpressurei', 'meandewpti', 'maxtempi'
+features_to_explor = ['UNIT_dummy', 'day_of_week', 'Hour', 'meanpressurei', 'fog', 'rain', 'meanwindspdi', 'meantempi', 'precipi']
+
+#-- save reslts in a list in the form (r_squared, [feature list], (intercept, params))
+results = [('r_squared', ('feature','list'), ('intercept', 'params')),]
 
 ## reload the data
 
@@ -121,15 +132,35 @@ del data['Unnamed: 0']
 test_data = pd.read_csv(r'turnstile_weather_v2_working_copy.csv')
 del test_data['Unnamed: 0']
 
-#-- Create numpy arrays
-values_array = data['ENTRIESn_hourly']
-test_data, UNIT_dummy = a.UNIT_dummy_vars(test_data, values=UNIT_dummy)
-test_values_array =
+## Create numpy arrays
+values_array = data['ENTRIESn_hourly'].values
+test_values_array = test_data['ENTRIESn_hourly'].values
 
-### Test every variable independently
-#-- generate predictions
-#-- calculate r** using backup data
+### Test every variable independently against the
 
+for feature in features_to_explore:
+    #-- extract feature
+    #-- generate predictions
+    feature_array = data[feature].values
+    intercept, params = a.OLS_linear_regression(feature_array, values_array)
+
+    #-- calculate r** using backup data
+    test_feature_array = test_data[feature].values
+    predictions = test_feature_array * params + intercept
+    r_squared = a.compute_r_squared(test_values_array, predictions)
+    #-- append results to list
+    results.append((r_squared, ([feature],), (intercept, tuple(params.tolist()))))
+
+    # [('r_squared', ('feature', 'list'), ('intercept', 'params')),
+    #  (0.36066468329622159, (['UNIT_dummy'],), (0.44582044219855199, (1.000019654833768,))),
+    #  (-0.062813493262236841, (['day_of_week'],), (1350.5997806795308, (-85.5451482036722,))),
+    #  (-0.020645166615559596, (['Hour'],), (447.17776398603291, (59.48616831074126,))),
+    #  (-0.072148096599663258, (['meanpressurei'],), (9752.6656708963455, (-288.91356369944765,))),
+    #  (-0.073920312745420658, (['fog'],), (1083.449282087679, (71.21006754320405,))),
+    #  (-0.072021772467172562, (['rain'],), (1090.2787801517247, (15.167596594046824,))),
+    #  (-0.067979992755955676, (['meanwindspdi'],), (921.35747190610505, (31.388951556096405,))),
+    #  (-0.069465093618023444, (['meantempi'],), (1616.6334487585414, (-8.11089419107536,))),
+    #  (-0.073463327604493589, (['precipi'],), (1086.2781786381292, (52.64972158324689,)))]
 
 ### Test the best variable with one other variable at a time
 
