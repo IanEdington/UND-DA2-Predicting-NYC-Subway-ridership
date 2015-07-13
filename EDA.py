@@ -331,3 +331,38 @@ test_values_array = test_data['ENTRIESn_hourly'].values
     #  [0.41571645197371865, ['maxtempi', 'UNIT_means']],
     #  [0.42824082804989616, ['day_of_week_means', 'UNIT_means']],
     #  [0.47968730654524339, ['Hour_means', 'UNIT_means']]]
+
+### Test Hour_means & UNIT_means with one other variable at a time
+## Remove UNIT_means & Hour_means and add them to all feature sets
+# features_to_explore = ['meanpressurei', 'fog', 'rain', 'meanwindspdi', 'meantempi', 'precipi', 'maxpressurei', 'maxdewpti', 'mintempi',  'mindewpti', 'minpressurei', 'meandewpti', 'maxtempi', 'day_of_week_means']
+
+# for feature in features_to_explore:
+#     features = [feature, 'UNIT_means', 'Hour_means']
+#     #-- extract feature
+#     feature_array = training_data[features].values
+#     test_feature_array = test_data[features].values
+#
+#     #-- generate predictions
+#     intercept, params = a.OLS_linear_regression(feature_array, values_array)
+#     predictions = np.dot(test_feature_array, params) + intercept
+#     #-- calculate r** using backup data
+#     r_squared = a.compute_r_squared(test_values_array, predictions)
+#     #-- append results to list
+#     results.append((r_squared, (features,), (intercept, tuple(params.tolist()))))
+
+# print ([[x[0], x[1][0]] for x in results])
+    #>[['r_squared', 'feature'],
+    #  [0.47973690168712868, ['meanpressurei', 'UNIT_means', 'Hour_means']],
+    #  [0.47979460100406623, ['fog', 'UNIT_means', 'Hour_means']],
+    #  [0.47967663503601432, ['rain', 'UNIT_means', 'Hour_means']],
+    #  [0.48036013058982785, ['meanwindspdi', 'UNIT_means', 'Hour_means']],
+    #  [0.4800944047778759, ['meantempi', 'UNIT_means', 'Hour_means']],
+    #  [0.47955870644631726, ['precipi', 'UNIT_means', 'Hour_means']],
+    #  [0.47967275545351939, ['maxpressurei', 'UNIT_means', 'Hour_means']],
+    #  [0.47977675413800425, ['maxdewpti', 'UNIT_means', 'Hour_means']],
+    #  [0.48037894348391585, ['mintempi', 'UNIT_means', 'Hour_means']],
+    #  [0.47996890142867377, ['mindewpti', 'UNIT_means', 'Hour_means']],
+    #  [0.47996153050185486, ['minpressurei', 'UNIT_means', 'Hour_means']],
+    #  [0.47986210732408541, ['meandewpti', 'UNIT_means', 'Hour_means']],
+    #  [0.47984846041148965, ['maxtempi', 'UNIT_means', 'Hour_means']],
+    #  [0.49370326835188771, ['day_of_week_means', 'UNIT_means', 'Hour_means']]]
