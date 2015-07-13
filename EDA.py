@@ -224,24 +224,25 @@ test_values_array = test_data['ENTRIESn_hourly'].values
 ### Test every variable independently against the
 #-- List of features to explore
 features_to_explore = ['UNIT', 'day_of_week', 'Hour', 'meanpressurei', 'fog', 'rain', 'meanwindspdi', 'meantempi', 'precipi', 'maxpressurei', 'maxdewpti', 'mintempi',  'mindewpti', 'minpressurei', 'meandewpti', 'maxtempi', 'UNIT_means', 'day_of_week_means', 'Hour_means']
-for feature in features_to_explore:
-    #-- extract feature
-    if feature in ['UNIT', 'day_of_week', 'Hour']:
-        feature_array = pd.get_dummies(training_data[feature], prefix=feature)
-        test_feature_array = pd.get_dummies(test_data[feature], prefix=feature)
-        dot = np.dot
-    else:
-        feature_array = training_data[feature].values
-        test_feature_array = test_data[feature].values
-        def dot(a,b):return a*b
-
-    #-- generate predictions
-    intercept, params = a.OLS_linear_regression(feature_array, values_array)
-    predictions = dot(test_feature_array, params) + intercept
-    #-- calculate r** using backup data
-    r_squared = a.compute_r_squared(test_values_array, predictions)
-    #-- append results to list
-    results.append((r_squared, ([feature],), (intercept, tuple(params.tolist()))))
+# for feature in features_to_explore:
+#     #-- extract feature
+#     if feature in ['UNIT', 'day_of_week', 'Hour']:
+#         #-- Use pandas.get_dummies for UNIT, day_of_week, Hour
+#         feature_array = pd.get_dummies(training_data[feature], prefix=feature)
+#         test_feature_array = pd.get_dummies(test_data[feature], prefix=feature)
+#         dot = np.dot
+#     else:
+#         feature_array = training_data[feature].values
+#         test_feature_array = test_data[feature].values
+#         def dot(a,b):return a*b
+#
+#     #-- generate predictions
+#     intercept, params = a.OLS_linear_regression(feature_array, values_array)
+#     predictions = dot(test_feature_array, params) + intercept
+#     #-- calculate r** using backup data
+#     r_squared = a.compute_r_squared(test_values_array, predictions)
+#     #-- append results to list
+#     results.append((r_squared, ([feature],), (intercept, tuple(params.tolist()))))
 
 # print ([[x[0], x[1][0][0]] for x in results])
     #>[['r_squared', 'f'],
@@ -267,3 +268,29 @@ for feature in features_to_explore:
 
 ### Using dummy variables & OLS still does not result in good predictions
 ### Implementing SGD...
+
+# for feature in features_to_explore:
+#     #-- extract feature
+#     if feature in ['UNIT', 'day_of_week', 'Hour']:
+#         #-- Use pandas.get_dummies for UNIT, day_of_week, Hour
+#         feature_array = pd.get_dummies(training_data[feature], prefix=feature)
+#         test_feature_array = pd.get_dummies(test_data[feature], prefix=feature)
+#         dot = np.dot
+#     else:
+#         feature_array = training_data[feature].values
+#         test_feature_array = test_data[feature].values
+#         def dot(a,b):return a*b
+#
+#     #-- generate predictions
+#     intercept, params = a.SGD_regression(feature_array, values_array)
+#     predictions = dot(test_feature_array, params) + intercept
+#     #-- calculate r** using backup data
+#     r_squared = a.compute_r_squared(test_values_array, predictions)
+#     #-- append results to list
+#     results.append((r_squared, ([feature],), (intercept, tuple(params.tolist()))))
+
+# print ([[x[0], x[1][0][0]] for x in results])
+    #>[['r_squared', 'f'],
+    #  [0.35693821347008892, 'UNIT'],
+    #  [-0.13336887490640703, 'day_of_week'],
+    #  [0.054474268865662423, 'Hour']]

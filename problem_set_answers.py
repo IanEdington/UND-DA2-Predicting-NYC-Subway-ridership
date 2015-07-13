@@ -146,33 +146,21 @@ def OLS_linear_regression(features, values):
     return intercept, params
 
 def SGD_regression(features, values):
-    pass
-
-def predictions(data, feature_list = ['rain', 'fog']):
-    '''
-    Using the information stored in the dataframe, let's predict the ridership of
-    the NYC subway using linear regression with gradient descent.
-    '''
-
-    # Select Features
-    features = data[feature_list]
-
-    # Add UNIT to features using dummy variables
-    dummy_units = pd.get_dummies(data['UNIT'], prefix='unit')
-    features = features.join(dummy_units)
-
-    # Values
-    values = data['ENTRIESn_hourly']
-
-    # Get the numpy arrays
-    features_array = features.values
-    values_array = values.values
-
-    # Perform linear regression
-    intercept, params = OLS_linear_regression(features_array, values_array)
-
-    predictions = intercept + np.dot(features_array, params)
-    return predictions
+    """
+    Perform linear regression given a data set with an arbitrary number of features.
+    """
+    # normalized feature matrix
+    means = np.mean(features, axis=0)
+    std_devs = np.std(features, axis=0)
+    normalized_features = (features - means) / std_devs
+    clf = SGDRegressor(n_iter=100)
+    clf.fit(normalized_features, values) #(X, y)
+    norm_params = clf.coef_
+    norm_intercept = clf.intercept_
+    # Recovers the weights for a linear model given parameters
+    intercept = norm_intercept - np.sum(means * norm_params / std_devs)
+    params = norm_params / std_devs
+    return intercept, params
 
 def plot_residuals(data, predictions):
     '''
