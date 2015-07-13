@@ -6,6 +6,9 @@ import matplotlib.pyplot as plt
 import matplotlib.mlab as mlab
 import json
 
+import importlib
+importlib.reload(a)
+
 ######################
 ### Wrangling data ###
 ######################
@@ -121,35 +124,35 @@ import json
 
 #-- List of features to explore
 ## The following columns were removed due to lack of test data: 'maxpressurei', 'maxdewpti', 'mintempi',  'mindewpti', 'minpressurei', 'meandewpti', 'maxtempi'
-features_to_explore = ['UNIT_dummy', 'day_of_week', 'Hour', 'meanpressurei', 'fog', 'rain', 'meanwindspdi', 'meantempi', 'precipi']
+# features_to_explore = ['UNIT_dummy', 'day_of_week', 'Hour', 'meanpressurei', 'fog', 'rain', 'meanwindspdi', 'meantempi', 'precipi']
 
 #-- save reslts in a list in the form (r_squared, [feature list], (intercept, params))
-results = [('r_squared', ('feature','list'), ('intercept', 'params')),]
+# results = [('r_squared', ('feature','list'), ('intercept', 'params')),]
 
 ## reload the data
-data = pd.read_csv(r'turnstile_data_working_copy.csv')
-del data['Unnamed: 0']
-test_data = pd.read_csv(r'turnstile_weather_v2_working_copy.csv')
-del test_data['Unnamed: 0']
+# data = pd.read_csv(r'turnstile_data_working_copy.csv')
+# del data['Unnamed: 0']
+# test_data = pd.read_csv(r'turnstile_weather_v2_working_copy.csv')
+# del test_data['Unnamed: 0']
 
 ## Create numpy arrays
-values_array = data['ENTRIESn_hourly'].values
-test_values_array = test_data['ENTRIESn_hourly'].values
+# values_array = data['ENTRIESn_hourly'].values
+# test_values_array = test_data['ENTRIESn_hourly'].values
 
 ### Test every variable independently against the
 
-for feature in features_to_explore:
-    #-- extract feature
-    #-- generate predictions
-    feature_array = data[feature].values
-    intercept, params = a.OLS_linear_regression(feature_array, values_array)
-
-    #-- calculate r** using backup data
-    test_feature_array = test_data[feature].values
-    predictions = test_feature_array * params + intercept
-    r_squared = a.compute_r_squared(test_values_array, predictions)
-    #-- append results to list
-    results.append((r_squared, ([feature],), (intercept, tuple(params.tolist()))))
+# for feature in features_to_explore:
+#     #-- extract feature
+#     #-- generate predictions
+#     feature_array = data[feature].values
+#     intercept, params = a.OLS_linear_regression(feature_array, values_array)
+#
+#     #-- calculate r** using backup data
+#     test_feature_array = test_data[feature].values
+#     predictions = test_feature_array * params + intercept
+#     r_squared = a.compute_r_squared(test_values_array, predictions)
+#     #-- append results to list
+#     results.append((r_squared, ([feature],), (intercept, tuple(params.tolist()))))
 
     # [('r_squared', ('feature', 'list'), ('intercept', 'params')),
     #  (0.36066468329622159, (['UNIT_dummy'],), (0.44582044219855199, (1.000019654833768,))),
@@ -169,3 +172,27 @@ for feature in features_to_explore:
 
 ### Well that didn't work :( (lots of -ve R values)
 ### going to try again with more dummy variables, SGD & spliting the data into test data and learning data instead of using the second data set.
+# http://scikit-learn.org/stable/tutorial/machine_learning_map/index.html
+
+### Prepare data for linear regression ###
+## add more dummy units for 'UNIT', 'day_of_week', 'Hour' using mean ENTRIESn_hourly
+# use original data
+data = pd.read_csv(r'turnstile_data_master_with_weather.csv')
+data['day_of_week'] = pd.to_datetime(data['DATEn']).dt.dayofweek
+del data['Unnamed: 0']
+
+# mean dummy set for UNIT, day_of_week, & Hour
+data, UNIT_means = a.mean_dummy_units(data, feature='UNIT')
+data, day_of_week_means = a.mean_dummy_units(data, feature='day_of_week')
+data, Hour_means = a.mean_dummy_units(data, feature='Hour')
+
+## save data to working data
+data.to_csv(path_or_buf=r'turnstile_data_working_copy.csv')
+
+## save the dummy variables used for reference
+mean_dummys = {'UNIT_means': a.JSONify_dict(UNIT_means),
+               'day_of_week_means': a.JSONify_dict(day_of_week_means),
+               'Hour_means': a.JSONify_dict(Hour_means)}
+
+with open('mean_dummys.json', 'w') as f:
+    json.dump(mean_dummys, f)

@@ -100,15 +100,30 @@ def hist_MWW_suitability(series1, series2, rORf='fog'):
     plt.savefig(title+'.png', bbox_inches='tight')
     plt.close('all')
 
-def UNIT_dummy_vars(data, values=None):
+def mean_dummy_units(data, values=None, feature='UNIT'):
     if values==None:
-        values = data.groupby('UNIT', as_index=False).agg({'ENTRIESn_hourly': 'mean'})
-        values['ENTRIESn_hourly'] = values['ENTRIESn_hourly'].astype(int)
-        values = values.set_index('UNIT')['ENTRIESn_hourly'].to_dict()
-    data['UNIT_dummy'] = data['UNIT'].replace(to_replace=values)
+        values = data.groupby(feature).agg({'ENTRIESn_hourly': 'mean'})
+        # http://stackoverflow.com/questions/19711943/pandas-dataframe-to-dictionary-value
+        values = {key: value.item() for (key, value) in values.iterrows()}
+    data[feature+'_means'] = data[feature].replace(to_replace=values)
 
     return data, values
 
+def JSONify_dict (mydict):
+    # http://stackoverflow.com/questions/7001606/json-serialize-a-dictionary-with-tuples-as-key
+    for key in mydict.keys():
+        if type(key) is not str:
+            try:
+                mydict[str(key)] = mydict[key]
+                del mydict[key]
+            except:
+                try:
+                    mydict[repr(key)] = mydict[key]
+                    del mydict[key]
+                except:
+                    print ("Could not convert to string. Unexpected error:", sys.exc_info()[0])
+                    raise
+    return mydict
 
 def OLS_linear_regression(features, values):
     """
