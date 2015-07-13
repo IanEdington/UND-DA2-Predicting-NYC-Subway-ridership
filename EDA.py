@@ -223,7 +223,7 @@ test_values_array = test_data['ENTRIESn_hourly'].values
 
 ### Test every variable independently against the
 #-- List of features to explore
-features_to_explore = ['UNIT', 'day_of_week', 'Hour', 'meanpressurei', 'fog', 'rain', 'meanwindspdi', 'meantempi', 'precipi', 'maxpressurei', 'maxdewpti', 'mintempi',  'mindewpti', 'minpressurei', 'meandewpti', 'maxtempi', 'UNIT_means', 'day_of_week_means', 'Hour_means']
+# features_to_explore = ['UNIT', 'day_of_week', 'Hour', 'meanpressurei', 'fog', 'rain', 'meanwindspdi', 'meantempi', 'precipi', 'maxpressurei', 'maxdewpti', 'mintempi',  'mindewpti', 'minpressurei', 'meandewpti', 'maxtempi', 'UNIT_means', 'day_of_week_means', 'Hour_means']
 # for feature in features_to_explore:
 #     #-- extract feature
 #     if feature in ['UNIT', 'day_of_week', 'Hour']:
@@ -294,3 +294,40 @@ features_to_explore = ['UNIT', 'day_of_week', 'Hour', 'meanpressurei', 'fog', 'r
     #  [0.35693821347008892, 'UNIT'],
     #  [-0.13336887490640703, 'day_of_week'],
     #  [0.054474268865662423, 'Hour']]
+
+### Test the best variable with one other variable at a time
+## Eliminate 'UNIT', 'day_of_week', 'Hour' from the possible features because the mean dummy units predict better.
+## Remove UNIT_means and add it to all feature sets
+# features_to_explore = ['meanpressurei', 'fog', 'rain', 'meanwindspdi', 'meantempi', 'precipi', 'maxpressurei', 'maxdewpti', 'mintempi',  'mindewpti', 'minpressurei', 'meandewpti', 'maxtempi', 'day_of_week_means', 'Hour_means']
+
+# for feature in features_to_explore:
+#     features = [feature,'UNIT_means']
+#     #-- extract feature
+#     feature_array = training_data[features].values
+#     test_feature_array = test_data[features].values
+#
+#     #-- generate predictions
+#     intercept, params = a.OLS_linear_regression(feature_array, values_array)
+#     predictions = np.dot(test_feature_array, params) + intercept
+#     #-- calculate r** using backup data
+#     r_squared = a.compute_r_squared(test_values_array, predictions)
+#     #-- append results to list
+#     results.append((r_squared, (features,), (intercept, tuple(params.tolist()))))
+
+# print ([[x[0], x[1][0]] for x in results])
+    #>[['r_squared', 'feature'],
+    #  [0.41559594882953754, ['meanpressurei', 'UNIT_means']],
+    #  [0.41558729341793865, ['fog', 'UNIT_means']],
+    #  [0.4154506737493936, ['rain', 'UNIT_means']],
+    #  [0.41601434244915769, ['meanwindspdi', 'UNIT_means']],
+    #  [0.41603923560882017, ['meantempi', 'UNIT_means']],
+    #  [0.41529264612541006, ['precipi', 'UNIT_means']],
+    #  [0.41554291112944919, ['maxpressurei', 'UNIT_means']],
+    #  [0.41563415696138684, ['maxdewpti', 'UNIT_means']],
+    #  [0.41638196279951056, ['mintempi', 'UNIT_means']],
+    #  [0.41587675542449065, ['mindewpti', 'UNIT_means']],
+    #  [0.4158260985182054, ['minpressurei', 'UNIT_means']],
+    #  [0.41576041540946318, ['meandewpti', 'UNIT_means']],
+    #  [0.41571645197371865, ['maxtempi', 'UNIT_means']],
+    #  [0.42824082804989616, ['day_of_week_means', 'UNIT_means']],
+    #  [0.47968730654524339, ['Hour_means', 'UNIT_means']]]
