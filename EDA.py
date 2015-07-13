@@ -1,13 +1,13 @@
 import problem_set_answers as a
-import pprint
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib.mlab as mlab
 import json
+# import matplotlib.pyplot as plt
+# import matplotlib.mlab as mlab
+# import pprint
 
-import importlib
-importlib.reload(a)
+# import importlib
+# importlib.reload(a)
 
 ######################
 ### Wrangling data ###
@@ -190,12 +190,11 @@ importlib.reload(a)
 # data.to_csv(path_or_buf=r'turnstile_data_working_copy.csv')
 
 ## save the dummy variables used for reference
-mean_dummys = {'UNIT_means': a.JSONify_dict(UNIT_means),
-               'day_of_week_means': a.JSONify_dict(day_of_week_means),
-               'Hour_means': a.JSONify_dict(Hour_means)}
-
-with open('mean_dummys.json', 'w') as f:
-    json.dump(mean_dummys, f)
+# mean_dummys = {'UNIT_means': a.JSONify_dict(UNIT_means),
+#                'day_of_week_means': a.JSONify_dict(day_of_week_means),
+#                'Hour_means': a.JSONify_dict(Hour_means)}
+# with open('mean_dummys.json', 'w') as f:
+#     json.dump(mean_dummys, f)
 
 ## reload the data without test data
 data = pd.read_csv(r'turnstile_data_working_copy.csv')
@@ -212,3 +211,59 @@ with open('test_rows.json') as f:
     test_rows = json.load(f)
 test_data = data.ix[test_rows]
 training_data = data.drop(test_rows)
+
+
+### Find the right features to use
+#-- save reslts in a list in the form (r_squared, [feature list], (intercept, params))
+results = [('r_squared', ('feature','list'), ('intercept', 'params')),]
+
+## Create numpy arrays
+values_array = training_data['ENTRIESn_hourly'].values
+test_values_array = test_data['ENTRIESn_hourly'].values
+
+### Test every variable independently against the
+#-- List of features to explore
+features_to_explore = ['UNIT', 'day_of_week', 'Hour', 'meanpressurei', 'fog', 'rain', 'meanwindspdi', 'meantempi', 'precipi', 'maxpressurei', 'maxdewpti', 'mintempi',  'mindewpti', 'minpressurei', 'meandewpti', 'maxtempi', 'UNIT_means', 'day_of_week_means', 'Hour_means']
+for feature in features_to_explore:
+    #-- extract feature
+    if feature in ['UNIT', 'day_of_week', 'Hour']:
+        feature_array = pd.get_dummies(training_data[feature], prefix=feature)
+        test_feature_array = pd.get_dummies(test_data[feature], prefix=feature)
+        dot = np.dot
+    else:
+        feature_array = training_data[feature].values
+        test_feature_array = test_data[feature].values
+        def dot(a,b):return a*b
+
+    #-- generate predictions
+    intercept, params = a.OLS_linear_regression(feature_array, values_array)
+    predictions = dot(test_feature_array, params) + intercept
+    #-- calculate r** using backup data
+    r_squared = a.compute_r_squared(test_values_array, predictions)
+    #-- append results to list
+    results.append((r_squared, ([feature],), (intercept, tuple(params.tolist()))))
+
+# print ([[x[0], x[1][0][0]] for x in results])
+    #>[['r_squared', 'f'],
+    #  [0.41004488886519175, 'UNIT'],
+    #  [0.013480119273690194, 'day_of_week'],
+    #  [0.11918213646536135, 'Hour'],
+    #  [4.6893252414248465e-05, 'meanpressurei'],
+    #  [0.00010419321888721633, 'fog'],
+    #  [-0.00016555909505555633, 'rain'],
+    #  [9.5051826772496462e-05, 'meanwindspdi'],
+    #  [0.0002848165517614909, 'meantempi'],
+    #  [-0.00018163984433350322, 'precipi'],
+    #  [9.0488266448751631e-06, 'maxpressurei'],
+    #  [-0.0001768707542453285, 'maxdewpti'],
+    #  [0.00058739536864838016, 'mintempi'],
+    #  [-0.00018067147690326024, 'mindewpti'],
+    #  [0.00028448751528775684, 'minpressurei'],
+    #  [-0.00019278784489529244, 'meandewpti'],
+    #  [-6.3230968838645651e-07, 'maxtempi'],
+    #  [0.41547200266629658, 'UNIT_means'],
+    #  [0.013506567080348253, 'day_of_week_means'],
+    #  [0.11935876457150507, 'Hour_means']]
+
+### Using dummy variables & OLS still does not result in good predictions
+### Implementing SGD...

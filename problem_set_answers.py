@@ -17,7 +17,7 @@ import scipy
 import scipy.stats
 import statsmodels.api as sm
 import sys
-from sklearn import datasets, linear_model
+from sklearn.linear_model import SGDRegressor
 
 
 def bar_plot_mean_Entries(data, feature, variable = 'ENTRIESn_hourly'):
@@ -145,6 +145,9 @@ def OLS_linear_regression(features, values):
 
     return intercept, params
 
+def SGD_regression(features, values):
+    pass
+
 def predictions(data, feature_list = ['rain', 'fog']):
     '''
     Using the information stored in the dataframe, let's predict the ridership of
@@ -215,12 +218,12 @@ def plot_weather_data(data):
     '''
 
     data['day_of_week'] = pd.to_datetime(data['DATEn']).dt.dayofweek
-#    plot = ggplot(data, aes('day_of_week', 'ENTRIESn_hourly')) + geom_point()
+    # plot = ggplot(data, aes('day_of_week', 'ENTRIESn_hourly')) + geom_point()
 
-# average of entries ploted against day of week
+    # average of entries ploted against day of week
     table = data.groupby('day_of_week', as_index=False).agg({'ENTRIESn_hourly': np.mean})
-#    table['Day of the WEEK'] = table['day_of_week'].apply(str)
-#    table.replace(to_replace=['0','1','2','3','4','5','6'], value=['Mon','Tue','Wed','Thur','Fri','Sat','Sun'], inplace=True)
+    # table['Day of the WEEK'] = table['day_of_week'].apply(str)
+    # table.replace(to_replace=['0','1','2','3','4','5','6'], value=['Mon','Tue','Wed','Thur','Fri','Sat','Sun'], inplace=True)
 
     plot = ggplot(table, aes('day_of_week', 'ENTRIESn_hourly')) +\
     geom_point(color='steelblue', size=200) + xlim(0, 6) + ylim(0, 1500) +\
