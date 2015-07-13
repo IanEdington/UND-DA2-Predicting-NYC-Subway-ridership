@@ -177,17 +177,17 @@ importlib.reload(a)
 ### Prepare data for linear regression ###
 ## add more dummy units for 'UNIT', 'day_of_week', 'Hour' using mean ENTRIESn_hourly
 # use original data
-data = pd.read_csv(r'turnstile_data_master_with_weather.csv')
-data['day_of_week'] = pd.to_datetime(data['DATEn']).dt.dayofweek
-del data['Unnamed: 0']
+# data = pd.read_csv(r'turnstile_data_master_with_weather.csv')
+# data['day_of_week'] = pd.to_datetime(data['DATEn']).dt.dayofweek
+# del data['Unnamed: 0']
 
 # mean dummy set for UNIT, day_of_week, & Hour
-data, UNIT_means = a.mean_dummy_units(data, feature='UNIT')
-data, day_of_week_means = a.mean_dummy_units(data, feature='day_of_week')
-data, Hour_means = a.mean_dummy_units(data, feature='Hour')
+# data, UNIT_means = a.mean_dummy_units(data, feature='UNIT')
+# data, day_of_week_means = a.mean_dummy_units(data, feature='day_of_week')
+# data, Hour_means = a.mean_dummy_units(data, feature='Hour')
 
 ## save data to working data
-data.to_csv(path_or_buf=r'turnstile_data_working_copy.csv')
+# data.to_csv(path_or_buf=r'turnstile_data_working_copy.csv')
 
 ## save the dummy variables used for reference
 mean_dummys = {'UNIT_means': a.JSONify_dict(UNIT_means),
@@ -196,3 +196,19 @@ mean_dummys = {'UNIT_means': a.JSONify_dict(UNIT_means),
 
 with open('mean_dummys.json', 'w') as f:
     json.dump(mean_dummys, f)
+
+## reload the data without test data
+data = pd.read_csv(r'turnstile_data_working_copy.csv')
+del data['Unnamed: 0']
+
+## split data into training_data and test_data
+# http://stackoverflow.com/questions/12190874/pandas-sampling-a-dataframe
+# test_rows = np.random.choice(data.index.values, len(data)*0.1, replace=False)
+# with open('test_rows.json', 'w') as f:
+#     json.dump(test_rows.tolist(), f)
+
+# Split data from test_rows
+with open('test_rows.json') as f:
+    test_rows = json.load(f)
+test_data = data.ix[test_rows]
+training_data = data.drop(test_rows)
