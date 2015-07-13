@@ -102,7 +102,7 @@ import json
 #     json.dump(UNIT_dummy, f)
 
 ## save over working file
-# data['day_of_week'] = pd.to_datetime(aa['DATEn']).dt.dayofweek
+# data['day_of_week'] = pd.to_datetime(data['DATEn']).dt.dayofweek
 # data.to_csv(path_or_buf=r'turnstile_data_working_copy.csv')
 
 ## Add UNIT_dummy and day_of_week columns for test_data
@@ -110,7 +110,8 @@ import json
 # with open('UNIT_dummy.json') as f:
 #     UNIT_dummy = json.load(f)
 # test_data, UNIT_dummy = a.UNIT_dummy_vars(test_data, UNIT_dummy)
-# test_aa['day_of_week'] =d.to_datetime(test_aa['DATEn']).dt.dayofweek# change hour to Hour so data & test_data match
+# test_data['day_of_week'] = pd.to_datetime(test_data['DATEn']).dt.dayofweek
+# change hour to Hour so data & test_data match
 # test_data = test_data.rename(columns={'hour': 'Hour'})
 # test_data = test_data.rename(columns={'meanwspdi': 'meanwindspdi'})
 # test_data.to_csv(path_or_buf = r'turnstile_weather_v2_working_copy.csv')
@@ -120,13 +121,12 @@ import json
 
 #-- List of features to explore
 ## The following columns were removed due to lack of test data: 'maxpressurei', 'maxdewpti', 'mintempi',  'mindewpti', 'minpressurei', 'meandewpti', 'maxtempi'
-features_to_explor = ['UNIT_dummy', 'day_of_week', 'Hour', 'meanpressurei', 'fog', 'rain', 'meanwindspdi', 'meantempi', 'precipi']
+features_to_explore = ['UNIT_dummy', 'day_of_week', 'Hour', 'meanpressurei', 'fog', 'rain', 'meanwindspdi', 'meantempi', 'precipi']
 
 #-- save reslts in a list in the form (r_squared, [feature list], (intercept, params))
 results = [('r_squared', ('feature','list'), ('intercept', 'params')),]
 
 ## reload the data
-
 data = pd.read_csv(r'turnstile_data_working_copy.csv')
 del data['Unnamed: 0']
 test_data = pd.read_csv(r'turnstile_weather_v2_working_copy.csv')
@@ -162,7 +162,10 @@ for feature in features_to_explore:
     #  (-0.069465093618023444, (['meantempi'],), (1616.6334487585414, (-8.11089419107536,))),
     #  (-0.073463327604493589, (['precipi'],), (1086.2781786381292, (52.64972158324689,)))]
 
-### Test the best variable with one other variable at a time
 
+################################
+### Linear Regression Take 2 ###
+################################
 
-### Test Predictions against backup data
+### Well that didn't work :( (lots of -ve R values)
+### going to try again with more dummy variables, SGD & spliting the data into test data and learning data instead of using the second data set.
