@@ -223,26 +223,26 @@ test_values_array = test_data['ENTRIESn_hourly'].values
 
 ### Test every variable independently against the
 #-- List of features to explore
-# features_to_explore = ['UNIT', 'day_of_week', 'Hour', 'meanpressurei', 'fog', 'rain', 'meanwindspdi', 'meantempi', 'precipi', 'maxpressurei', 'maxdewpti', 'mintempi',  'mindewpti', 'minpressurei', 'meandewpti', 'maxtempi', 'UNIT_means', 'day_of_week_means', 'Hour_means']
-# for feature in features_to_explore:
-#     #-- extract feature
-#     if feature in ['UNIT', 'day_of_week', 'Hour']:
-#         #-- Use pandas.get_dummies for UNIT, day_of_week, Hour
-#         feature_array = pd.get_dummies(training_data[feature], prefix=feature)
-#         test_feature_array = pd.get_dummies(test_data[feature], prefix=feature)
-#         dot = np.dot
-#     else:
-#         feature_array = training_data[feature].values
-#         test_feature_array = test_data[feature].values
-#         def dot(a,b):return a*b
-#
-#     #-- generate predictions
-#     intercept, params = a.OLS_linear_regression(feature_array, values_array)
-#     predictions = dot(test_feature_array, params) + intercept
-#     #-- calculate r** using backup data
-#     r_squared = a.compute_r_squared(test_values_array, predictions)
-#     #-- append results to list
-#     results.append((r_squared, ([feature],), (intercept, tuple(params.tolist()))))
+features_to_explore = ['UNIT', 'day_of_week', 'Hour', 'meanpressurei', 'fog', 'rain', 'meanwindspdi', 'meantempi', 'precipi', 'maxpressurei', 'maxdewpti', 'mintempi',  'mindewpti', 'minpressurei', 'meandewpti', 'maxtempi', 'UNIT_means', 'day_of_week_means', 'Hour_means']
+for feature in features_to_explore:
+    #-- extract feature
+    if feature in ['UNIT', 'day_of_week', 'Hour']:
+        #-- Use pandas.get_dummies for UNIT, day_of_week, Hour
+        feature_array = pd.get_dummies(training_data[feature], prefix=feature)
+        test_feature_array = pd.get_dummies(test_data[feature], prefix=feature)
+        dot = np.dot
+    else:
+        feature_array = training_data[feature].values
+        test_feature_array = test_data[feature].values
+        def dot(a,b):return a*b
+
+    #-- generate predictions
+    intercept, params = a.OLS_linear_regression(feature_array, values_array)
+    predictions = dot(test_feature_array, params) + intercept
+    #-- calculate r** using backup data
+    r_squared = a.compute_r_squared(test_values_array, predictions)
+    #-- append results to list
+    results.append((r_squared, ([feature],), (intercept, tuple(params.tolist()))))
 
 # print ([[x[0], x[1][0][0]] for x in results])
     #>[['r_squared', 'f'],
@@ -298,21 +298,21 @@ test_values_array = test_data['ENTRIESn_hourly'].values
 ### Test the best variable with one other variable at a time
 ## Eliminate 'UNIT', 'day_of_week', 'Hour' from the possible features because the mean dummy units predict better.
 ## Remove UNIT_means and add it to all feature sets
-# features_to_explore = ['meanpressurei', 'fog', 'rain', 'meanwindspdi', 'meantempi', 'precipi', 'maxpressurei', 'maxdewpti', 'mintempi',  'mindewpti', 'minpressurei', 'meandewpti', 'maxtempi', 'day_of_week_means', 'Hour_means']
+features_to_explore = ['meanpressurei', 'fog', 'rain', 'meanwindspdi', 'meantempi', 'precipi', 'maxpressurei', 'maxdewpti', 'mintempi',  'mindewpti', 'minpressurei', 'meandewpti', 'maxtempi', 'day_of_week_means', 'Hour_means']
 
-# for feature in features_to_explore:
-#     features = [feature,'UNIT_means']
-#     #-- extract feature
-#     feature_array = training_data[features].values
-#     test_feature_array = test_data[features].values
-#
-#     #-- generate predictions
-#     intercept, params = a.OLS_linear_regression(feature_array, values_array)
-#     predictions = np.dot(test_feature_array, params) + intercept
-#     #-- calculate r** using backup data
-#     r_squared = a.compute_r_squared(test_values_array, predictions)
-#     #-- append results to list
-#     results.append((r_squared, (features,), (intercept, tuple(params.tolist()))))
+for feature in features_to_explore:
+    features = [feature,'UNIT_means']
+    #-- extract feature
+    feature_array = training_data[features].values
+    test_feature_array = test_data[features].values
+
+    #-- generate predictions
+    intercept, params = a.OLS_linear_regression(feature_array, values_array)
+    predictions = np.dot(test_feature_array, params) + intercept
+    #-- calculate r** using backup data
+    r_squared = a.compute_r_squared(test_values_array, predictions)
+    #-- append results to list
+    results.append((r_squared, (features,), (intercept, tuple(params.tolist()))))
 
 # print ([[x[0], x[1][0]] for x in results])
     #>[['r_squared', 'feature'],
@@ -334,21 +334,21 @@ test_values_array = test_data['ENTRIESn_hourly'].values
 
 ### Test Hour_means & UNIT_means with one other variable at a time
 ## Remove UNIT_means & Hour_means and add them to all feature sets
-# features_to_explore = ['meanpressurei', 'fog', 'rain', 'meanwindspdi', 'meantempi', 'precipi', 'maxpressurei', 'maxdewpti', 'mintempi',  'mindewpti', 'minpressurei', 'meandewpti', 'maxtempi', 'day_of_week_means']
+features_to_explore = ['meanpressurei', 'fog', 'rain', 'meanwindspdi', 'meantempi', 'precipi', 'maxpressurei', 'maxdewpti', 'mintempi',  'mindewpti', 'minpressurei', 'meandewpti', 'maxtempi', 'day_of_week_means']
 
-# for feature in features_to_explore:
-#     features = [feature, 'UNIT_means', 'Hour_means']
-#     #-- extract feature
-#     feature_array = training_data[features].values
-#     test_feature_array = test_data[features].values
-#
-#     #-- generate predictions
-#     intercept, params = a.OLS_linear_regression(feature_array, values_array)
-#     predictions = np.dot(test_feature_array, params) + intercept
-#     #-- calculate r** using backup data
-#     r_squared = a.compute_r_squared(test_values_array, predictions)
-#     #-- append results to list
-#     results.append((r_squared, (features,), (intercept, tuple(params.tolist()))))
+for feature in features_to_explore:
+    features = [feature, 'UNIT_means', 'Hour_means']
+    #-- extract feature
+    feature_array = training_data[features].values
+    test_feature_array = test_data[features].values
+
+    #-- generate predictions
+    intercept, params = a.OLS_linear_regression(feature_array, values_array)
+    predictions = np.dot(test_feature_array, params) + intercept
+    #-- calculate r** using backup data
+    r_squared = a.compute_r_squared(test_values_array, predictions)
+    #-- append results to list
+    results.append((r_squared, (features,), (intercept, tuple(params.tolist()))))
 
 # print ([[x[0], x[1][0]] for x in results])
     #>[['r_squared', 'feature'],
@@ -369,21 +369,21 @@ test_values_array = test_data['ENTRIESn_hourly'].values
 
 ### Test UNIT_means, Hour_means & day_of_week_means with one other variable at a time
 ## Remove UNIT_means, Hour_means & day_of_week_means and add them to all feature sets
-# features_to_explore = ['meanpressurei', 'fog', 'rain', 'meanwindspdi', 'meantempi', 'precipi', 'maxpressurei', 'maxdewpti', 'mintempi',  'mindewpti', 'minpressurei', 'meandewpti', 'maxtempi']
+features_to_explore = ['meanpressurei', 'fog', 'rain', 'meanwindspdi', 'meantempi', 'precipi', 'maxpressurei', 'maxdewpti', 'mintempi',  'mindewpti', 'minpressurei', 'meandewpti', 'maxtempi']
 
-# for feature in features_to_explore:
-#     features = [feature, 'UNIT_means', 'Hour_means', 'day_of_week_means']
-#     #-- extract feature
-#     feature_array = training_data[features].values
-#     test_feature_array = test_data[features].values
-#
-#     #-- generate predictions
-#     intercept, params = a.OLS_linear_regression(feature_array, values_array)
-#     predictions = np.dot(test_feature_array, params) + intercept
-#     #-- calculate r** using backup data
-#     r_squared = a.compute_r_squared(test_values_array, predictions)
-#     #-- append results to list
-#     results.append((r_squared, (features,), (intercept, tuple(params.tolist()))))
+for feature in features_to_explore:
+    features = [feature, 'UNIT_means', 'Hour_means', 'day_of_week_means']
+    #-- extract feature
+    feature_array = training_data[features].values
+    test_feature_array = test_data[features].values
+
+    #-- generate predictions
+    intercept, params = a.OLS_linear_regression(feature_array, values_array)
+    predictions = np.dot(test_feature_array, params) + intercept
+    #-- calculate r** using backup data
+    r_squared = a.compute_r_squared(test_values_array, predictions)
+    #-- append results to list
+    results.append((r_squared, (features,), (intercept, tuple(params.tolist()))))
 
 # print ([[x[0], x[1][0]] for x in results])
     #>[['r_squared', 'feature'],
@@ -400,3 +400,148 @@ test_values_array = test_data['ENTRIESn_hourly'].values
     #  [0.49378156919660487, ['minpressurei', 'UNIT_means', 'Hour_means', 'day_of_week_means']],
     #  [0.49373445063798294, ['meandewpti', 'UNIT_means', 'Hour_means', 'day_of_week_means']],
     #  [0.49397803935218865, ['maxtempi', 'UNIT_means', 'Hour_means', 'day_of_week_means']]]
+
+## Test adding maxtempi
+features_to_explore = ['meanpressurei', 'fog', 'rain', 'meanwindspdi', 'meantempi', 'precipi', 'maxpressurei', 'maxdewpti', 'mintempi',  'mindewpti', 'minpressurei', 'meandewpti']
+
+for feature in features_to_explore:
+    features = [feature, 'UNIT_means', 'Hour_means', 'day_of_week_means', 'maxtempi']
+    #-- extract feature
+    feature_array = training_data[features].values
+    test_feature_array = test_data[features].values
+
+    #-- generate predictions
+    intercept, params = a.OLS_linear_regression(feature_array, values_array)
+    predictions = np.dot(test_feature_array, params) + intercept
+    #-- calculate r** using backup data
+    r_squared = a.compute_r_squared(test_values_array, predictions)
+    #-- append results to list
+    results.append((r_squared, (features,), (intercept, tuple(params.tolist()))))
+
+# print ([[x[0], x[1][0]] for x in results])
+    #>[['r_squared', 'feature'],
+    #  [0.49397619378619528, ['meanpressurei', 'UNIT_means', 'Hour_means', 'day_of_week_means', 'maxtempi']],
+    #  [0.49399801652926134, ['fog', 'UNIT_means', 'Hour_means', 'day_of_week_means', 'maxtempi']],
+    #  [0.49415940953240234, ['rain', 'UNIT_means', 'Hour_means', 'day_of_week_means', 'maxtempi']],
+    #  [0.49397862264605163, ['meanwindspdi', 'UNIT_means', 'Hour_means', 'day_of_week_means', 'maxtempi']],
+    #  [0.49395867822271988, ['meantempi', 'UNIT_means', 'Hour_means', 'day_of_week_means', 'maxtempi']],
+    #  [0.49430849100089047, ['precipi', 'UNIT_means', 'Hour_means', 'day_of_week_means', 'maxtempi']],
+    #  [0.49394595436532107, ['maxpressurei', 'UNIT_means', 'Hour_means', 'day_of_week_means', 'maxtempi']],
+    #  [0.49397478619625901, ['maxdewpti', 'UNIT_means', 'Hour_means', 'day_of_week_means', 'maxtempi']],
+    #  [0.49397076793747408, ['mintempi', 'UNIT_means', 'Hour_means', 'day_of_week_means', 'maxtempi']],
+    #  [0.49394704683251178, ['mindewpti', 'UNIT_means', 'Hour_means', 'day_of_week_means', 'maxtempi']],
+    #  [0.49404619381526171, ['minpressurei', 'UNIT_means', 'Hour_means', 'day_of_week_means', 'maxtempi']],
+    #  [0.49395595938817671, ['meandewpti', 'UNIT_means', 'Hour_means', 'day_of_week_means', 'maxtempi']]]
+
+# Test adding precipi
+features_to_explore = ['meanpressurei', 'fog', 'rain', 'meanwindspdi', 'meantempi', 'maxpressurei', 'maxdewpti', 'mintempi',  'mindewpti', 'minpressurei', 'meandewpti']
+
+for feature in features_to_explore:
+    features = [feature, 'UNIT_means', 'Hour_means', 'day_of_week_means', 'maxtempi', 'precipi']
+    #-- extract feature
+    feature_array = training_data[features].values
+    test_feature_array = test_data[features].values
+
+    #-- generate predictions
+    intercept, params = a.OLS_linear_regression(feature_array, values_array)
+    predictions = np.dot(test_feature_array, params) + intercept
+    #-- calculate r** using backup data
+    r_squared = a.compute_r_squared(test_values_array, predictions)
+    #-- append results to list
+    results.append((r_squared, (features,), (intercept, tuple(params.tolist()))))
+
+# print ([[x[0], x[1][0]] for x in results])
+    #>[['r_squared', 'feature'],
+    #  [0.49435730653077181, ['meanpressurei', 'UNIT_means', 'Hour_means', 'day_of_week_means', 'maxtempi', 'precipi']],
+    #  [0.49460171140718767, ['fog', 'UNIT_means', 'Hour_means', 'day_of_week_means', 'maxtempi', 'precipi']],
+    #  [0.4942978801376432, ['rain', 'UNIT_means', 'Hour_means', 'day_of_week_means', 'maxtempi', 'precipi']],
+    #  [0.49431046392161515, ['meanwindspdi', 'UNIT_means', 'Hour_means', 'day_of_week_means', 'maxtempi', 'precipi']],
+    #  [0.49427944872247853, ['meantempi', 'UNIT_means', 'Hour_means', 'day_of_week_means', 'maxtempi', 'precipi']],
+    #  [0.4942937903172262, ['maxpressurei', 'UNIT_means', 'Hour_means', 'day_of_week_means', 'maxtempi', 'precipi']],
+    #  [0.49433418773417048, ['maxdewpti', 'UNIT_means', 'Hour_means', 'day_of_week_means', 'maxtempi', 'precipi']],
+    #  [0.49427944658657152, ['mintempi', 'UNIT_means', 'Hour_means', 'day_of_week_means', 'maxtempi', 'precipi']],
+    #  [0.49424410869396584, ['mindewpti', 'UNIT_means', 'Hour_means', 'day_of_week_means', 'maxtempi', 'precipi']],
+    #  [0.49442291041055964, ['minpressurei', 'UNIT_means', 'Hour_means', 'day_of_week_means', 'maxtempi', 'precipi']],
+    #  [0.49427915776113918, ['meandewpti', 'UNIT_means', 'Hour_means', 'day_of_week_means', 'maxtempi', 'precipi']]]
+
+# Test adding fog compare with 0.49460171140718767
+features_to_explore = ['meanpressurei', 'rain', 'meanwindspdi', 'meantempi', 'maxpressurei', 'maxdewpti', 'mintempi',  'mindewpti', 'minpressurei', 'meandewpti']
+
+for feature in features_to_explore:
+    features = [feature, 'UNIT_means', 'Hour_means', 'day_of_week_means', 'maxtempi', 'precipi', 'fog']
+    #-- extract feature
+    feature_array = training_data[features].values
+    test_feature_array = test_data[features].values
+
+    #-- generate predictions
+    intercept, params = a.OLS_linear_regression(feature_array, values_array)
+    predictions = np.dot(test_feature_array, params) + intercept
+    #-- calculate r** using backup data
+    r_squared = a.compute_r_squared(test_values_array, predictions)
+    #-- append results to list
+    results.append((r_squared, (features,), (intercept, tuple(params.tolist()))))
+
+# print ([[x[0], x[1][0]] for x in results])
+    #>[['r_squared', 'feature'],
+    #  [0.49459748045790541, ['meanpressurei', 'UNIT_means', 'Hour_means', 'day_of_week_means', 'maxtempi', 'precipi', 'fog']],
+    #  [0.49465295145307331, ['rain', 'UNIT_means', 'Hour_means', 'day_of_week_means', 'maxtempi', 'precipi', 'fog']],
+    #  [0.49462377994181617, ['meanwindspdi', 'UNIT_means', 'Hour_means', 'day_of_week_means', 'maxtempi', 'precipi', 'fog']],
+    #  [0.49456993308680874, ['meantempi', 'UNIT_means', 'Hour_means', 'day_of_week_means', 'maxtempi', 'precipi', 'fog']],
+    #  [0.49457760432961051, ['maxpressurei', 'UNIT_means', 'Hour_means', 'day_of_week_means', 'maxtempi', 'precipi', 'fog']],
+    #  [0.49458594651000443, ['maxdewpti', 'UNIT_means', 'Hour_means', 'day_of_week_means', 'maxtempi', 'precipi', 'fog']],
+    #  [0.49458519727104444, ['mintempi', 'UNIT_means', 'Hour_means', 'day_of_week_means', 'maxtempi', 'precipi', 'fog']],
+    #  [0.494524766286221, ['mindewpti', 'UNIT_means', 'Hour_means', 'day_of_week_means', 'maxtempi', 'precipi', 'fog']],
+    #  [0.49461007182343686, ['minpressurei', 'UNIT_means', 'Hour_means', 'day_of_week_means', 'maxtempi', 'precipi', 'fog']],
+    #  [0.49454481157040175, ['meandewpti', 'UNIT_means', 'Hour_means', 'day_of_week_means', 'maxtempi', 'precipi', 'fog']]]
+
+# Test adding rain compare with 0.49465295145307331
+features_to_explore = ['meanpressurei', 'meanwindspdi', 'meantempi', 'maxpressurei', 'maxdewpti', 'mintempi',  'mindewpti', 'minpressurei', 'meandewpti']
+
+for feature in features_to_explore:
+    features = [feature, 'UNIT_means', 'Hour_means', 'day_of_week_means', 'maxtempi', 'precipi', 'fog', 'rain']
+    #-- extract feature
+    feature_array = training_data[features].values
+    test_feature_array = test_data[features].values
+
+    #-- generate predictions
+    intercept, params = a.OLS_linear_regression(feature_array, values_array)
+    predictions = np.dot(test_feature_array, params) + intercept
+    #-- calculate r** using backup data
+    r_squared = a.compute_r_squared(test_values_array, predictions)
+    #-- append results to list
+    results.append((r_squared, (features,), (intercept, tuple(params.tolist()))))
+
+# print ([[x[0], x[1][0]] for x in results])
+    #>[['r_squared', 'feature'],
+    #  [0.4946525609002429, ['meanpressurei', 'UNIT_means', 'Hour_means', 'day_of_week_means', 'maxtempi', 'precipi', 'fog', 'rain']],
+    #  [0.49466806849051093, ['meanwindspdi', 'UNIT_means', 'Hour_means', 'day_of_week_means', 'maxtempi', 'precipi', 'fog', 'rain']],
+    #  [0.49462569628221476, ['meantempi', 'UNIT_means', 'Hour_means', 'day_of_week_means', 'maxtempi', 'precipi', 'fog', 'rain']],
+    #  [0.49462586265978714, ['maxpressurei', 'UNIT_means', 'Hour_means', 'day_of_week_means', 'maxtempi', 'precipi', 'fog', 'rain']],
+    #  [0.49469115125765351, ['maxdewpti', 'UNIT_means', 'Hour_means', 'day_of_week_means', 'maxtempi', 'precipi', 'fog', 'rain']],
+    #  [0.4946351051575969, ['mintempi', 'UNIT_means', 'Hour_means', 'day_of_week_means', 'maxtempi', 'precipi', 'fog', 'rain']],
+    #  [0.49461647391320085, ['mindewpti', 'UNIT_means', 'Hour_means', 'day_of_week_means', 'maxtempi', 'precipi', 'fog', 'rain']],
+    #  [0.49466634958996603, ['minpressurei', 'UNIT_means', 'Hour_means', 'day_of_week_means', 'maxtempi', 'precipi', 'fog', 'rain']],
+    #  [0.49464460779303077, ['meandewpti', 'UNIT_means', 'Hour_means', 'day_of_week_means', 'maxtempi', 'precipi', 'fog', 'rain']]]
+
+### Try it with all features to see if it makes a difference.
+features = ['UNIT_means', 'Hour_means', 'day_of_week_means', 'meanpressurei', 'fog', 'rain', 'meanwindspdi', 'meantempi', 'precipi', 'maxpressurei', 'maxdewpti', 'mintempi',  'mindewpti', 'minpressurei', 'meandewpti', 'maxtempi']
+
+#-- extract feature
+feature_array = training_data[features].values
+test_feature_array = test_data[features].values
+
+#-- generate predictions
+intercept, params = a.OLS_linear_regression(feature_array, values_array)
+predictions = np.dot(test_feature_array, params) + intercept
+#-- calculate r** using backup data
+r_squared = a.compute_r_squared(test_values_array, predictions)
+#-- append results to list
+results.append((r_squared, (features,), (intercept, tuple(params.tolist()))))
+
+# print ([[x[0], x[1][0]] for x in results])
+    #>[['r_squared', 'feature'],
+    #  [0.4953608732252669, ['UNIT_means', 'Hour_means', 'day_of_week_means', 'meanpressurei', 'fog', 'rain', 'meanwindspdi', 'meantempi', 'precipi', 'maxpressurei', 'maxdewpti', 'mintempi', 'mindewpti', 'minpressurei', 'meandewpti', 'maxtempi']]]
+
+# Save results to json
+with open('results.json', 'w') as f:
+    json.dump(results, f)
