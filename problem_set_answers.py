@@ -1,21 +1,28 @@
 # Reference:
-#   http://pandas.pydata.org/pandas-docs/stable/visualization.html#histograms
-#   http://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.mannwhitneyu.html
-#   http://docs.scipy.org/doc/numpy/reference/generated/numpy.mean.html
-#   http://statsmodels.sourceforge.net/0.5.0/generated/statsmodels.regression.linear_model.OLS.html
-#   http://statsmodels.sourceforge.net/0.5.0/generated/statsmodels.regression.linear_model.OLS.fit.html
-#   http://statsmodels.sourceforge.net/0.5.0/generated/statsmodels.regression.linear_model.RegressionResults.html
-#   http://www.itl.nist.gov/div898/handbook/pri/section2/pri24.htm
-#   http://docs.scipy.org/doc/numpy/reference/generated/numpy.mean.html
-#   http://docs.scipy.org/doc/numpy/reference/generated/numpy.sum.html
-#   https://pypi.python.org/pypi/ggplot/
+#     https://en.wikipedia.org/wiki/Mann–Whitney_U_test
+#     https://statistics.laerd.com/spss-tutorials/mann-whitney-u-test-using-spss-statistics.php
+#     http://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.mannwhitneyu.html
+#     http://docs.scipy.org/doc/numpy/reference/generated/numpy.mean.html
+#     http://docs.scipy.org/doc/numpy/reference/generated/numpy.sum.html
+#     http://pandas.pydata.org/pandas-docs/stable/visualization.html#histograms
+#     http://pandas.pydata.org/pandas-docs/stable/groupby.html
+#     http://pypi.python.org/pypi/ggplot/
+#     http://scikit-learn.org/stable/tutorial/machine_learning_map/index.html
+#     http://stackoverflow.com/questions/12190874/pandas-sampling-a-dataframe
+#     http://stackoverflow.com/questions/19711943/pandas-dataframe-to-dictionary-value
+#     http://stackoverflow.com/questions/7001606/json-serialize-a-dictionary-with-tuples-as-key
+#     http://statsmodels.sourceforge.net/0.5.0/generated/statsmodels.regression.linear_model.OLS.html
+#     http://statsmodels.sourceforge.net/0.5.0/generated/statsmodels.regression.linear_model.OLS.fit.html
+#     http://statsmodels.sourceforge.net/0.5.0/generated/statsmodels.regression.linear_model.RegressionResults.html
+#     http://wiki.scipy.org/Cookbook/Matplotlib/BarCharts
+#     http://www.itl.nist.gov/div898/handbook/pri/section2/pri24.htm
 
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import scipy
 import scipy.stats
-import statsmodels.api as sm
+# import statsmodels.api as sm
 import sys
 from sklearn.linear_model import SGDRegressor
 
@@ -220,3 +227,56 @@ def plot_weather_data(data):
     xlab("Days of the WEEK (0 = Monday, 6 = Sunday)") + ylab("Average hourly ENTRIES")
 
     return plot
+
+def boxplot_date_time(data_to_plot):
+    '''
+    consume data made up of different series
+    ref: http://blog.bharatbhole.com/creating-boxplots-with-matplotlib/
+    '''
+    # Create a figure instance
+    fig = plt.figure(1, figsize=(9, 6))
+
+    # Create an axes instance
+    ax = fig.add_subplot(111)
+
+    # Create the boxplot
+    bp = ax.boxplot(data_to_plot)
+
+    # Save the figure
+    fig.savefig('fig1.png', bbox_inches='tight')
+
+    ## add patch_artist=True option to ax.boxplot()
+    ## to get fill color
+    bp = ax.boxplot(data_to_plot, patch_artist=True)
+
+    ## change outline color, fill color and linewidth of the boxes
+    for box in bp['boxes']:
+        # change outline color
+        box.set( color='#7570b3', linewidth=2)
+        # change fill color
+        box.set( facecolor = '#1b9e77' )
+
+    ## change color and linewidth of the whiskers
+    for whisker in bp['whiskers']:
+        whisker.set(color='#7570b3', linewidth=2)
+
+    ## change color and linewidth of the caps
+    for cap in bp['caps']:
+        cap.set(color='#7570b3', linewidth=2)
+
+    ## change color and linewidth of the medians
+    for median in bp['medians']:
+        median.set(color='#b2df8a', linewidth=2)
+
+    ## change the style of fliers and their fill
+    for flier in bp['fliers']:
+        flier.set(marker='o', color='#e7298a', alpha=0.5)
+
+    ## Custom x-axis labels
+    ax.set_xticklabels(['Sample1', 'Sample2', 'Sample3', 'Sample4'])
+
+    ## Remove top axes and right axes ticks
+    ax.get_xaxis().tick_bottom()
+    ax.get_yaxis().tick_left()
+
+    fig.show()

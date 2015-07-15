@@ -6,8 +6,8 @@ import json
 # import matplotlib.mlab as mlab
 # import pprint
 
-# import importlib
-# importlib.reload(a)
+import importlib
+importlib.reload(a)
 
 ######################
 ### Wrangling data ###
@@ -289,7 +289,7 @@ a.hist_MWW_suitability(no_fog, fog, rORf='fog')
 #     #-- append results to list
 #     results.append((r_squared, ([feature],), (intercept, tuple(params.tolist()))))
 
-# print ([[x[0], x[1][0][0]] for x in results])
+# print ([[x[0], x[1][0][0]] for x in results]) # compare to 0.41004488886519175
     #>[['r_squared', 'f'],
     #  [0.35693821347008892, 'UNIT'],
     #  [-0.13336887490640703, 'day_of_week'],
@@ -314,7 +314,7 @@ a.hist_MWW_suitability(no_fog, fog, rORf='fog')
 #     #-- append results to list
 #     results.append((r_squared, (features,), (intercept, tuple(params.tolist()))))
 
-# print ([[x[0], x[1][0]] for x in results])
+# print ([[x[0], x[1][0]] for x in results]) # compare to 0.41004488886519175
     #>[['r_squared', 'feature'],
     #  [0.41559594882953754, ['meanpressurei', 'UNIT_means']],
     #  [0.41558729341793865, ['fog', 'UNIT_means']],
@@ -350,7 +350,7 @@ a.hist_MWW_suitability(no_fog, fog, rORf='fog')
 #     #-- append results to list
 #     results.append((r_squared, (features,), (intercept, tuple(params.tolist()))))
 
-# print ([[x[0], x[1][0]] for x in results])
+# print ([[x[0], x[1][0]] for x in results]) # compare to 0.47968730654524339
     #>[['r_squared', 'feature'],
     #  [0.47973690168712868, ['meanpressurei', 'UNIT_means', 'Hour_means']],
     #  [0.47979460100406623, ['fog', 'UNIT_means', 'Hour_means']],
@@ -559,3 +559,12 @@ a.hist_MWW_suitability(no_fog, fog, rORf='fog')
 #
 # plt = a.plot_residuals(test_data, predictions)
 # plt.show()
+
+data_to_plot = [data[data.day_of_week==0]['ENTRIESn_hourly'],
+                data[data.day_of_week==1]['ENTRIESn_hourly'],
+                data[data.day_of_week==2]['ENTRIESn_hourly'],
+                data[data.day_of_week==3]['ENTRIESn_hourly'],
+                data[data.day_of_week==4]['ENTRIESn_hourly'],
+                data[data.day_of_week==5]['ENTRIESn_hourly'],
+                data[data.day_of_week==6]['ENTRIESn_hourly'],]
+a.boxplot_date_time(data_to_plot)
