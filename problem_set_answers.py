@@ -87,15 +87,16 @@ def hist_MWW_suitability(series1, series2, rORf='fog'):
     if rORf=='rain':
         series1.hist(bins=12, range=(0,6000), color='Blue', label='No Rain', stacked=True)
         series2.hist(bins=12, range=(0,6000), color='Green', label='Rain', stacked=True)
-        title = 'Histogram of Subway entries per hour split by whether there it is raining or not'
+        title = 'Volume of ridership by whether or not it is raining'
     else:
         series1.hist(bins=12, range=(0,6000), color='Blue', label='No Fog', stacked=True)
         series2.hist(bins=12, range=(0,6000), color='Green', label='Fog', stacked=True)
-        title = 'Histogram of Subway entries per hour split by whether there is fog or not'
+        title = 'Volume of ridership by whether or not there is fog'
 
     plt.legend(prop={'size': 14})
-    plt.xlabel('Subway entries per hour')
-    plt.ylabel('Frequency of occurence')
+    plt.xlabel('volume of ridership')
+    plt.ylabel('frequency of occurence')
+    plt.ylim((0,70000))
     plt.title(title)
     plt.savefig(title+'.png', bbox_inches='tight')
     plt.close('all')
