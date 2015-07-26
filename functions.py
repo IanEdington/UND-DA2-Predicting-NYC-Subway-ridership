@@ -3,7 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import scipy
 import scipy.stats
-# import statsmodels.api as sm
+import statsmodels.api as sm
 import sys
 from sklearn.linear_model import SGDRegressor
 from itertools import combinations
@@ -128,26 +128,61 @@ def compute_r_squared(values, predictions):
         http://docs.scipy.org/doc/numpy/reference/generated/numpy.mean.html
         http://docs.scipy.org/doc/numpy/reference/generated/numpy.sum.html
     '''
+    num2 = values-predictions
+    num1 = num2**2
+    num = num1.sum()
 
-    return 1 - (((values-predictions)**2).sum())/(((values-np.mean(values))**2).sum())
+    denom3 = np.mean(values)
+    denom2 = values-denom3
+    denom1 = denom2**2
+    denom = denom1.sum()
+
+    return 1 - num/denom
+
+def train_test_data(data, prop=0.2):
+    '''
+    split data into training_data and test_data
+    consume: data, %
+    return: training_data, test_data
+
+    ref: http://stackoverflow.com/questions/12190874/pandas-sampling-a-dataframe
+    '''
+    # generate random rows by index
+    test_rows = np.random.choice(data.index.values, len(data)*prop, replace=False)
+
+    # Split data from test_rows
+    test_data = data.ix[test_rows]
+    training_data = data.drop(test_rows)
+    return training_data, test_data
 
 def feature_testing(data, all_features):
-    results = {}
-    # http://stackoverflow.com/questions/464864/python-code-to-pick-out-all-possible-combinations-from-a-list
-    for L in range(1, len(stuff)+1):
-        for features in combinations(all_features, L):
+    '''
 
+    ref: http://stackoverflow.com/questions/464864/python-code-to-pick-out-all-possible-combinations-from-a-list
+    '''
+    results = []
+    training_data, test_data = train_test_data(data)
+
+    ## Create numpy arrays
+    values_array = training_data['ENTRIESn_hourly'].values
+    test_values_array = test_data['ENTRIESn_hourly'].values
+
+    for L in range(1, len(all_features)+1):
+        for subset in combinations(all_features, L):
+            features = list(subset)
             #-- generate predictions
-            feature_array = data[feature].values
+            feature_array = training_data[features].values
             intercept, params = OLS_linear_regression(feature_array, values_array)
 
-            #-- calculate r** using backup data
-            test_feature_array = test_data[feature].values
+            #-- calculate r** using test_data
+            test_feature_array = test_data[features].values
             predictions = test_feature_array * params + intercept
             r_squared = compute_r_squared(test_values_array, predictions)
             #-- append results to list
-            results.append((r_squared, ([feature],), (intercept, tuple(params.tolist()))))
+            results.append((r_squared, ([features],), (intercept, tuple(params.tolist()))))
+
     return results
+
 
 #####################
 ### Visualization ###
