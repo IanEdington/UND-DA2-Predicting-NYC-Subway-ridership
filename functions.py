@@ -139,11 +139,11 @@ def compute_r_squared(values, predictions):
 
     return 1 - num/denom
 
-def train_test_data(data, prop=0.2):
+def train_ts_data(data, prop=0.2):
     '''
-    split data into training_data and test_data
+    split data into tr_data and ts_data
     consume: data, %
-    return: training_data, test_data
+    return: tr_data, ts_data
 
     ref: http://stackoverflow.com/questions/12190874/pandas-sampling-a-dataframe
     '''
@@ -151,35 +151,63 @@ def train_test_data(data, prop=0.2):
     test_rows = np.random.choice(data.index.values, len(data)*prop, replace=False)
 
     # Split data from test_rows
-    test_data = data.ix[test_rows]
-    training_data = data.drop(test_rows)
-    return training_data, test_data
+    ts_data = data.ix[test_rows]
+    tr_data = data.drop(test_rows)
+    return tr_data, ts_data
 
-def feature_testing(data, all_features):
+def make_feature_arrays(tr_data, ts_data, features, dummy_vars):
     '''
+    takes tr_data, ts_data, features, and dummy_vars
+    returns feature_array, test_feature_array
+    '''
+    # sort dummy features from regular Features
+    dummy_feat = []
+    reg_feat = []
+    for feature in features:
+        if feature in dummy_vars:
+            dummy_feat.append(feature)
+        else:
+            reg_feat.append(feature)
 
+    tr_feat_dt_reg = tr_data[reg_feat]
+    ts_feat_dt_reg = ts_data[reg_feat]
+
+    # Add features using dummy variables
+    tr_dummys = pd.get_dummies(tr_data[dummy_feat], columns=dummy_feat)
+    ts_dummys = pd.get_dummies(ts_data[dummy_feat], columns=dummy_feat)
+
+    tr_feat_dt = tr_feat_dt_reg.join(tr_dummys)
+    ts_feat_dt = ts_feat_dt_reg.join(ts_dummys)
+
+    return tr_feat_dt.values, ts_feat_dt.values, tr_feat_dt.columns.tolist()
+
+def feature_testing(data, all_features, dummy_vars = None):
+    '''
     ref: http://stackoverflow.com/questions/464864/python-code-to-pick-out-all-possible-combinations-from-a-list
     '''
-    results = []
-    training_data, test_data = train_test_data(data)
+    results = {}
+    i=0
+    tr_data, ts_data = train_ts_data(data)
 
     ## Create numpy arrays
-    values_array = training_data['ENTRIESn_hourly'].values
-    test_values_array = test_data['ENTRIESn_hourly'].values
+    values_array = tr_data['ENTRIESn_hourly'].values
+    test_values_array = ts_data['ENTRIESn_hourly'].values
 
     for L in range(1, len(all_features)+1):
         for subset in combinations(all_features, L):
             features = list(subset)
+
+            feature_array, test_feature_array, params_names = make_feature_arrays(tr_data, ts_data, features, dummy_vars)
+
             #-- generate predictions
-            feature_array = training_data[features].values
             intercept, params = OLS_linear_regression(feature_array, values_array)
 
-            #-- calculate r** using test_data
-            test_feature_array = test_data[features].values
-            predictions = test_feature_array * params + intercept
+            #-- calculate r** using ts_data
+            predictions = (test_feature_array*params).sum(axis=1) + intercept
             r_squared = compute_r_squared(test_values_array, predictions)
             #-- append results to list
-            results.append((r_squared, ([features],), (intercept, tuple(params.tolist()))))
+            results[i] = [r_squared, [features], [intercept, params.tolist()], params_names]
+            i+=1
 
     return results
 
