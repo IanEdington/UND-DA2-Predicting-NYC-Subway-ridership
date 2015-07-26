@@ -1,22 +1,3 @@
-# Reference:
-#     https://en.wikipedia.org/wiki/Mann–Whitney_U_test
-#     https://statistics.laerd.com/spss-tutorials/mann-whitney-u-test-using-spss-statistics.php
-#     http://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.mannwhitneyu.html
-#     http://docs.scipy.org/doc/numpy/reference/generated/numpy.mean.html
-#     http://docs.scipy.org/doc/numpy/reference/generated/numpy.sum.html
-#     http://pandas.pydata.org/pandas-docs/stable/visualization.html#histograms
-#     http://pandas.pydata.org/pandas-docs/stable/groupby.html
-#     http://pypi.python.org/pypi/ggplot/
-#     http://scikit-learn.org/stable/tutorial/machine_learning_map/index.html
-#     http://stackoverflow.com/questions/12190874/pandas-sampling-a-dataframe
-#     http://stackoverflow.com/questions/19711943/pandas-dataframe-to-dictionary-value
-#     http://stackoverflow.com/questions/7001606/json-serialize-a-dictionary-with-tuples-as-key
-#     http://statsmodels.sourceforge.net/0.5.0/generated/statsmodels.regression.linear_model.OLS.html
-#     http://statsmodels.sourceforge.net/0.5.0/generated/statsmodels.regression.linear_model.OLS.fit.html
-#     http://statsmodels.sourceforge.net/0.5.0/generated/statsmodels.regression.linear_model.RegressionResults.html
-#     http://wiki.scipy.org/Cookbook/Matplotlib/BarCharts
-#     http://www.itl.nist.gov/div898/handbook/pri/section2/pri24.htm
-
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -25,6 +6,7 @@ import scipy.stats
 # import statsmodels.api as sm
 import sys
 from sklearn.linear_model import SGDRegressor
+from itertools import combinations
 
 
 def bar_plot_mean_Entries(data, feature, variable = 'ENTRIESn_hourly'):
@@ -56,27 +38,6 @@ def bar_plot_mean_Entries(data, feature, variable = 'ENTRIESn_hourly'):
     plt.savefig(title+'.png', bbox_inches='tight')
     plt.close('all')
 
-def mann_whitney_plus_means(series1, series2):
-    '''
-    consume: two series that you want to compare
-        ie: data[data.rain == 1]['ENTRIESn_hourly']
-            data[data.rain == 0]['ENTRIESn_hourly']
-
-    return: 1, 2, 3, 4
-        1) the mean of entries of df1
-        2) the mean of entries of df2
-        3) the Mann-Whitney U-statistic and
-        4) p-value comparing entries from df1 and entries from df2
-
-    Reference:
-        http://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.mannwhitneyu.html
-        http://docs.scipy.org/doc/numpy/reference/generated/numpy.mean.html
-    '''
-
-    U,p =scipy.stats.mannwhitneyu(series1, series2)
-
-    return series1.mean(), series2.mean(), U, p
-
 def hist_MWW_suitability(series1, series2, rORf='fog'):
     '''
     Plots two histograms to determin if the Mann-Whitney U-test (MWW) is an appropiate statistical method. If the two overlapping Histograms are of similar distribution one of MWW's assumptions is met.
@@ -103,35 +64,40 @@ def hist_MWW_suitability(series1, series2, rORf='fog'):
     plt.legend(prop={'size': 14})
     plt.xlabel('volume of ridership')
     plt.ylabel('frequency of occurence')
-    plt.ylim((0,70000))
+    plt.ylim((0,16000))
     plt.title(title)
-    plt.savefig(title+'.png', bbox_inches='tight')
-    plt.close('all')
+    return plt
 
-def mean_dummy_units(data, values=None, feature='UNIT'):
-    if values==None:
-        values = data.groupby(feature).agg({'ENTRIESn_hourly': 'mean'})
-        # http://stackoverflow.com/questions/19711943/pandas-dataframe-to-dictionary-value
-        values = {key: value.item() for (key, value) in values.iterrows()}
-    data[feature+'_means'] = data[feature].replace(to_replace=values)
+def mann_whitney_plus_means(series1, series2):
+    '''
+    consume: two series that you want to compare
+        ie: data[data.rain == 1]['ENTRIESn_hourly']
+            data[data.rain == 0]['ENTRIESn_hourly']
 
-    return data, values
+    return: 1, 2, 3, 4
+        1) the mean of entries of df1
+        2) the mean of entries of df2
+        3) the Mann-Whitney U-statistic and
+        4) p-value comparing entries from df1 and entries from df2
 
-def JSONify_dict (mydict):
-    # http://stackoverflow.com/questions/7001606/json-serialize-a-dictionary-with-tuples-as-key
-    for key in mydict.keys():
-        if type(key) is not str:
-            try:
-                mydict[str(key)] = mydict[key]
-                del mydict[key]
-            except:
-                try:
-                    mydict[repr(key)] = mydict[key]
-                    del mydict[key]
-                except:
-                    print ("Could not convert to string. Unexpected error:", sys.exc_info()[0])
-                    raise
-    return mydict
+    Reference:
+        http://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.mannwhitneyu.html
+        http://docs.scipy.org/doc/numpy/reference/generated/numpy.mean.html
+    '''
+
+    U,p =scipy.stats.mannwhitneyu(series1, series2)
+
+    return series1.mean(), series2.mean(), U, p*2
+
+def are_features_perfectly_colinearity(data, features):
+    stations = {}
+    for index, row in data.iterrows():
+        if row[features[0]] in stations:
+            if stations[row[features[0]]] != row[features].tolist():
+                return index, row, stations
+        else:
+            stations[row[features[0]]] = row[features].tolist()
+    return 'perfectly colinear'
 
 def OLS_linear_regression(features, values):
     """

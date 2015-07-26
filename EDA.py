@@ -6,9 +6,6 @@ import json
 # import matplotlib.mlab as mlab
 # import pprint
 
-import importlib
-importlib.reload(a)
-
 ######################
 ### Wrangling data ###
 ######################
@@ -32,7 +29,7 @@ del data['Unnamed: 0']
 
 # all possible Features:
 # print (data.columns.values.tolist())
-#> ['Unnamed: 0', 'Unnamed: 0.1', 'UNIT', 'DATEn', 'TIMEn', 'Hour', 'DESCn', 'ENTRIESn_hourly', 'EXITSn_hourly', 'maxpressurei', 'maxdewpti', 'mindewpti', 'minpressurei', 'meandewpti', 'meanpressurei', 'fog', 'rain', 'meanwindspdi', 'mintempi', 'meantempi', 'maxtempi', 'precipi', 'thunder', 'day_of_week']
+
 
 # Which ones should we explore?
 # UNIT: YES. Using UNIT would tell us if their is a specific area that is being used more than another not weather related we want to predict ridership overall.
@@ -55,7 +52,7 @@ del data['Unnamed: 0']
 # Figures generated are in dir EDA_figs
 
 # for feature in features_to_explore:
-# 	a.bar_plot_mean_Entries(data, feature)
+# 	func.bar_plot_mean_Entries(data, feature)
 
 
 ### Looking at only the binary factors (Rain and Fog)
@@ -66,29 +63,17 @@ no_fog = data[data.fog == 0]['ENTRIESn_hourly']
 fog = data[data.fog == 1]['ENTRIESn_hourly']
 
 #-- Test selection: make a hist of the data
-a.hist_MWW_suitability(no_rain, rain, rORf='rain')
-a.hist_MWW_suitability(no_fog, fog, rORf='fog')
+func.hist_MWW_suitability(no_rain, rain, rORf='rain')
+func.hist_MWW_suitability(no_fog, fog, rORf='fog')
 
 #-- compare binary factors using Mann-Whitney statistic
 # bi_f = {'title': ['mean with_rain',
 # 				  'mean without_rain',
 # 				  'Mann-Whitney U-statistic',
 # 				  'Mann-Whitney p-value' ]}
-# bi_f['rain'] = list(a.mann_whitney_plus_means(no_rain, rain))
-# bi_f['fog'] = list(a.mann_whitney_plus_means(no_fog, fog))
+# bi_f['rain'] = list(func.mann_whitney_plus_means(no_rain, rain))
+# bi_f['fog'] = list(func.mann_whitney_plus_means(no_fog, fog))
 # pprint.pprint (bi_f)
-	# >{'title': ['mean with_rain',
-	#            'mean without_rain',
-	#            'Mann-Whitney U-statistic',
-	#            'Mann-Whitney p-value'],
-	#  'fog': [1083.4492820876781,
-	#          1154.6593496303688,
-	#          1189034717.5,
-	#          6.0915569104373036e-06],
-	#  'rain': [1090.278780151855,
-	#           1105.4463767458733,
-	#           1924409167.0,
-	#           0.024999912793489721]}
 
 ###
 
@@ -98,7 +83,7 @@ a.hist_MWW_suitability(no_fog, fog, rORf='fog')
 
 ### Prepare data for linear regression ###
 #-- Create dummy varriables for 'UNIT'
-# data, UNIT_dummy = a.UNIT_dummy_vars(data)
+# data, UNIT_dummy = func.UNIT_dummy_vars(data)
 
 ## save the dummy variables used for reference
 # with open('UNIT_dummy.json', 'wr') as f:
@@ -112,7 +97,7 @@ a.hist_MWW_suitability(no_fog, fog, rORf='fog')
 # test_data = pd.read_csv(r'turnstile_weather_v2.csv')
 # with open('UNIT_dummy.json') as f:
 #     UNIT_dummy = json.load(f)
-# test_data, UNIT_dummy = a.UNIT_dummy_vars(test_data, UNIT_dummy)
+# test_data, UNIT_dummy = func.UNIT_dummy_vars(test_data, UNIT_dummy)
 # test_data['day_of_week'] = pd.to_datetime(test_data['DATEn']).dt.dayofweek
 # change hour to Hour so data & test_data match
 # test_data = test_data.rename(columns={'hour': 'Hour'})
@@ -182,17 +167,17 @@ a.hist_MWW_suitability(no_fog, fog, rORf='fog')
 # del data['Unnamed: 0']
 
 # mean dummy set for UNIT, day_of_week, & Hour
-# data, UNIT_means = a.mean_dummy_units(data, feature='UNIT')
-# data, day_of_week_means = a.mean_dummy_units(data, feature='day_of_week')
-# data, Hour_means = a.mean_dummy_units(data, feature='Hour')
+# data, UNIT_means = func.mean_dummy_units(data, feature='UNIT')
+# data, day_of_week_means = func.mean_dummy_units(data, feature='day_of_week')
+# data, Hour_means = func.mean_dummy_units(data, feature='Hour')
 
 ## save data to working data
 # data.to_csv(path_or_buf=r'turnstile_data_working_copy.csv')
 
 ## save the dummy variables used for reference
-# mean_dummys = {'UNIT_means': a.JSONify_dict(UNIT_means),
-#                'day_of_week_means': a.JSONify_dict(day_of_week_means),
-#                'Hour_means': a.JSONify_dict(Hour_means)}
+# mean_dummys = {'UNIT_means': func.JSONify_dict(UNIT_means),
+#                'day_of_week_means': func.JSONify_dict(day_of_week_means),
+#                'Hour_means': func.JSONify_dict(Hour_means)}
 # with open('mean_dummys.json', 'w') as f:
 #     json.dump(mean_dummys, f)
 
@@ -237,10 +222,10 @@ a.hist_MWW_suitability(no_fog, fog, rORf='fog')
 #         def dot(a,b):return a*b
 #
 #     #-- generate predictions
-#     intercept, params = a.OLS_linear_regression(feature_array, values_array)
+#     intercept, params = func.OLS_linear_regression(feature_array, values_array)
 #     predictions = dot(test_feature_array, params) + intercept
 #     #-- calculate r** using backup data
-#     r_squared = a.compute_r_squared(test_values_array, predictions)
+#     r_squared = func.compute_r_squared(test_values_array, predictions)
 #     #-- append results to list
 #     results.append((r_squared, ([feature],), (intercept, tuple(params.tolist()))))
 
@@ -282,10 +267,10 @@ a.hist_MWW_suitability(no_fog, fog, rORf='fog')
 #         def dot(a,b):return a*b
 #
 #     #-- generate predictions
-#     intercept, params = a.SGD_regression(feature_array, values_array)
+#     intercept, params = func.SGD_regression(feature_array, values_array)
 #     predictions = dot(test_feature_array, params) + intercept
 #     #-- calculate r** using backup data
-#     r_squared = a.compute_r_squared(test_values_array, predictions)
+#     r_squared = func.compute_r_squared(test_values_array, predictions)
 #     #-- append results to list
 #     results.append((r_squared, ([feature],), (intercept, tuple(params.tolist()))))
 
@@ -307,10 +292,10 @@ a.hist_MWW_suitability(no_fog, fog, rORf='fog')
 #     test_feature_array = test_data[features].values
 #
 #     #-- generate predictions
-#     intercept, params = a.OLS_linear_regression(feature_array, values_array)
+#     intercept, params = func.OLS_linear_regression(feature_array, values_array)
 #     predictions = np.dot(test_feature_array, params) + intercept
 #     #-- calculate r** using backup data
-#     r_squared = a.compute_r_squared(test_values_array, predictions)
+#     r_squared = func.compute_r_squared(test_values_array, predictions)
 #     #-- append results to list
 #     results.append((r_squared, (features,), (intercept, tuple(params.tolist()))))
 
@@ -343,10 +328,10 @@ a.hist_MWW_suitability(no_fog, fog, rORf='fog')
 #     test_feature_array = test_data[features].values
 #
 #     #-- generate predictions
-#     intercept, params = a.OLS_linear_regression(feature_array, values_array)
+#     intercept, params = func.OLS_linear_regression(feature_array, values_array)
 #     predictions = np.dot(test_feature_array, params) + intercept
 #     #-- calculate r** using backup data
-#     r_squared = a.compute_r_squared(test_values_array, predictions)
+#     r_squared = func.compute_r_squared(test_values_array, predictions)
 #     #-- append results to list
 #     results.append((r_squared, (features,), (intercept, tuple(params.tolist()))))
 
@@ -378,10 +363,10 @@ a.hist_MWW_suitability(no_fog, fog, rORf='fog')
 #     test_feature_array = test_data[features].values
 #
 #     #-- generate predictions
-#     intercept, params = a.OLS_linear_regression(feature_array, values_array)
+#     intercept, params = func.OLS_linear_regression(feature_array, values_array)
 #     predictions = np.dot(test_feature_array, params) + intercept
 #     #-- calculate r** using backup data
-#     r_squared = a.compute_r_squared(test_values_array, predictions)
+#     r_squared = func.compute_r_squared(test_values_array, predictions)
 #     #-- append results to list
 #     results.append((r_squared, (features,), (intercept, tuple(params.tolist()))))
 
@@ -411,10 +396,10 @@ a.hist_MWW_suitability(no_fog, fog, rORf='fog')
 #     test_feature_array = test_data[features].values
 #
 #     #-- generate predictions
-#     intercept, params = a.OLS_linear_regression(feature_array, values_array)
+#     intercept, params = func.OLS_linear_regression(feature_array, values_array)
 #     predictions = np.dot(test_feature_array, params) + intercept
 #     #-- calculate r** using backup data
-#     r_squared = a.compute_r_squared(test_values_array, predictions)
+#     r_squared = func.compute_r_squared(test_values_array, predictions)
 #     #-- append results to list
 #     results.append((r_squared, (features,), (intercept, tuple(params.tolist()))))
 
@@ -443,10 +428,10 @@ a.hist_MWW_suitability(no_fog, fog, rORf='fog')
 #     test_feature_array = test_data[features].values
 #
 #     #-- generate predictions
-#     intercept, params = a.OLS_linear_regression(feature_array, values_array)
+#     intercept, params = func.OLS_linear_regression(feature_array, values_array)
 #     predictions = np.dot(test_feature_array, params) + intercept
 #     #-- calculate r** using backup data
-#     r_squared = a.compute_r_squared(test_values_array, predictions)
+#     r_squared = func.compute_r_squared(test_values_array, predictions)
 #     #-- append results to list
 #     results.append((r_squared, (features,), (intercept, tuple(params.tolist()))))
 
@@ -474,10 +459,10 @@ a.hist_MWW_suitability(no_fog, fog, rORf='fog')
 #     test_feature_array = test_data[features].values
 #
 #     #-- generate predictions
-#     intercept, params = a.OLS_linear_regression(feature_array, values_array)
+#     intercept, params = func.OLS_linear_regression(feature_array, values_array)
 #     predictions = np.dot(test_feature_array, params) + intercept
 #     #-- calculate r** using backup data
-#     r_squared = a.compute_r_squared(test_values_array, predictions)
+#     r_squared = func.compute_r_squared(test_values_array, predictions)
 #     #-- append results to list
 #     results.append((r_squared, (features,), (intercept, tuple(params.tolist()))))
 
@@ -504,10 +489,10 @@ a.hist_MWW_suitability(no_fog, fog, rORf='fog')
 #     test_feature_array = test_data[features].values
 #
 #     #-- generate predictions
-#     intercept, params = a.OLS_linear_regression(feature_array, values_array)
+#     intercept, params = func.OLS_linear_regression(feature_array, values_array)
 #     predictions = np.dot(test_feature_array, params) + intercept
 #     #-- calculate r** using backup data
-#     r_squared = a.compute_r_squared(test_values_array, predictions)
+#     r_squared = func.compute_r_squared(test_values_array, predictions)
 #     #-- append results to list
 #     results.append((r_squared, (features,), (intercept, tuple(params.tolist()))))
 
@@ -531,10 +516,10 @@ a.hist_MWW_suitability(no_fog, fog, rORf='fog')
 # test_feature_array = test_data[features].values
 #
 # #-- generate predictions
-# intercept, params = a.OLS_linear_regression(feature_array, values_array)
+# intercept, params = func.OLS_linear_regression(feature_array, values_array)
 # predictions = np.dot(test_feature_array, params) + intercept
 # #-- calculate r** using backup data
-# r_squared = a.compute_r_squared(test_values_array, predictions)
+# r_squared = func.compute_r_squared(test_values_array, predictions)
 # #-- append results to list
 # results.append((r_squared, (features,), (intercept, tuple(params.tolist()))))
 
@@ -552,12 +537,12 @@ a.hist_MWW_suitability(no_fog, fog, rORf='fog')
 # feature_array = training_data[features].values
 # test_feature_array = test_data[features].values
 #
-# intercept, params = a.OLS_linear_regression(feature_array, values_array)
+# intercept, params = func.OLS_linear_regression(feature_array, values_array)
 # predictions = np.dot(test_feature_array, params) + intercept
 # #-- calculate r** using backup data
-# r_squared = a.compute_r_squared(test_values_array, predictions)
+# r_squared = func.compute_r_squared(test_values_array, predictions)
 #
-# plt = a.plot_residuals(test_data, predictions)
+# plt = func.plot_residuals(test_data, predictions)
 # plt.show()
 
 data_to_plot = [data[data.day_of_week==0]['ENTRIESn_hourly'],
@@ -567,4 +552,4 @@ data_to_plot = [data[data.day_of_week==0]['ENTRIESn_hourly'],
                 data[data.day_of_week==4]['ENTRIESn_hourly'],
                 data[data.day_of_week==5]['ENTRIESn_hourly'],
                 data[data.day_of_week==6]['ENTRIESn_hourly'],]
-a.boxplot_date_time(data_to_plot)
+func.boxplot_date_time(data_to_plot)
