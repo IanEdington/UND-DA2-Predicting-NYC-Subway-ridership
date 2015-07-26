@@ -126,18 +126,18 @@ func.hist_MWW_suitability(no_fog, fog, rORf='fog')
 
 ### Test every variable independently against the
 
-# for feature in features_to_explore:
-#     #-- extract feature
-#     #-- generate predictions
-#     feature_array = data[feature].values
-#     intercept, params = a.OLS_linear_regression(feature_array, values_array)
-#
-#     #-- calculate r** using backup data
-#     test_feature_array = test_data[feature].values
-#     predictions = test_feature_array * params + intercept
-#     r_squared = a.compute_r_squared(test_values_array, predictions)
-#     #-- append results to list
-#     results.append((r_squared, ([feature],), (intercept, tuple(params.tolist()))))
+for feature in features_to_explore:
+    #-- extract feature
+    #-- generate predictions
+    feature_array = data[feature].values
+    intercept, params = func.OLS_linear_regression(feature_array, values_array)
+
+    #-- calculate r** using backup data
+    test_feature_array = test_data[feature].values
+    predictions = test_feature_array * params + intercept
+    r_squared = func.compute_r_squared(test_values_array, predictions)
+    #-- append results to list
+    results.append((r_squared, ([feature],), (intercept, tuple(params.tolist()))))
 
     # [('r_squared', ('feature', 'list'), ('intercept', 'params')),
     #  (0.36066468329622159, (['UNIT_dummy'],), (0.44582044219855199, (1.000019654833768,))),

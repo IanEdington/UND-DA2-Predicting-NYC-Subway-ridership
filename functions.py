@@ -119,32 +119,6 @@ def OLS_linear_regression(features, values):
 
     return intercept, params
 
-def SGD_regression(features, values):
-    """
-    Perform linear regression given a data set with an arbitrary number of features.
-    """
-    # normalized feature matrix
-    means = np.mean(features, axis=0)
-    std_devs = np.std(features, axis=0)
-    normalized_features = (features - means) / std_devs
-    clf = SGDRegressor(n_iter=100)
-    clf.fit(normalized_features, values) #(X, y)
-    norm_params = clf.coef_
-    norm_intercept = clf.intercept_
-    # Recovers the weights for a linear model given parameters
-    intercept = norm_intercept - np.sum(means * norm_params / std_devs)
-    params = norm_params / std_devs
-    return intercept, params
-
-def plot_residuals(data, predictions):
-    '''
-    http://www.itl.nist.gov/div898/handbook/pri/section2/pri24.htm
-    '''
-
-    plt.figure()
-    (data['ENTRIESn_hourly'] - predictions).hist(bins=20, range=(-10000,10000))
-    return plt
-
 def compute_r_squared(values, predictions):
     '''
     consume: numpy list of original data points, numpy list of predicted data points
@@ -155,23 +129,38 @@ def compute_r_squared(values, predictions):
         http://docs.scipy.org/doc/numpy/reference/generated/numpy.sum.html
     '''
 
-    ### broken down ###
-    # numerator = ((values-predictions)**2).sum()
-    # denominator = ((values-np.mean(values))**2).sum()
-    # r_squared = 1 - numerator/denominator
-    # return r_squared
-
-    # one liner equation
     return 1 - (((values-predictions)**2).sum())/(((values-np.mean(values))**2).sum())
 
-###visualization
-    # Here are some suggestions for things to investigate and illustrate:
-    #  * Ridership by time of day or day of week
-    #  * How ridership varies based on Subway station (UNIT)
-    #  * Which stations have more exits or entries at different times of day
-    #   (You can use UNIT as a proxy for subway station.)
-    #   scatterplot, line plot, or histogram or boxplot with tails :(can't with ggplot python )
+def feature_testing(data, all_features):
+    results = {}
+    # http://stackoverflow.com/questions/464864/python-code-to-pick-out-all-possible-combinations-from-a-list
+    for L in range(1, len(stuff)+1):
+        for features in combinations(all_features, L):
 
+            #-- generate predictions
+            feature_array = data[feature].values
+            intercept, params = OLS_linear_regression(feature_array, values_array)
+
+            #-- calculate r** using backup data
+            test_feature_array = test_data[feature].values
+            predictions = test_feature_array * params + intercept
+            r_squared = compute_r_squared(test_values_array, predictions)
+            #-- append results to list
+            results.append((r_squared, ([feature],), (intercept, tuple(params.tolist()))))
+    return results
+
+#####################
+### Visualization ###
+#####################
+
+def plot_residuals(data, predictions):
+    '''
+    http://www.itl.nist.gov/div898/handbook/pri/section2/pri24.htm
+    '''
+
+    plt.figure()
+    (data['ENTRIESn_hourly'] - predictions).hist(bins=20, range=(-10000,10000))
+    return plt
 
 def plot_weather_data(data):
     '''
