@@ -162,22 +162,13 @@ def make_feature_arrays(tr_data, ts_data, features, dummy_vars):
     '''
     # sort dummy features from regular Features
     dummy_feat = []
-    reg_feat = []
     for feature in features:
         if feature in dummy_vars:
             dummy_feat.append(feature)
-        else:
-            reg_feat.append(feature)
 
-    tr_feat_dt_reg = tr_data[reg_feat]
-    ts_feat_dt_reg = ts_data[reg_feat]
-
-    # Add features using dummy variables
-    tr_dummys = pd.get_dummies(tr_data[dummy_feat], columns=dummy_feat)
-    ts_dummys = pd.get_dummies(ts_data[dummy_feat], columns=dummy_feat)
-
-    tr_feat_dt = tr_feat_dt_reg.join(tr_dummys)
-    ts_feat_dt = ts_feat_dt_reg.join(ts_dummys)
+    # crop features and select dummy variables
+    tr_feat_dt = pd.get_dummies(tr_data[features], columns=dummy_feat)
+    ts_feat_dt = pd.get_dummies(ts_data[features], columns=dummy_feat)
 
     return tr_feat_dt.values, ts_feat_dt.values, tr_feat_dt.columns.tolist()
 
