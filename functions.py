@@ -140,7 +140,7 @@ def compute_r_squared(values, predictions):
 
     return 1 - num/denom
 
-def train_ts_data(data, prop=0.2):
+def split_tr_ts(data, prop=0.2):
     '''
     split data into tr_data and ts_data
     consume: data, %
@@ -154,6 +154,7 @@ def train_ts_data(data, prop=0.2):
     # Split data from test_rows
     ts_data = data.ix[test_rows]
     tr_data = data.drop(test_rows)
+
     return tr_data, ts_data
 
 def make_feature_arrays(tr_data, ts_data, features, dummy_vars):
@@ -173,13 +174,13 @@ def make_feature_arrays(tr_data, ts_data, features, dummy_vars):
 
     return tr_feat_dt.values, ts_feat_dt.values, tr_feat_dt.columns.tolist()
 
-def feature_testing(data, all_features, dummy_vars = None):
+def feature_testing(data, all_features, dummy_vars = None, frange=(5, 8), t_limit=10000):
     '''
     ref: http://stackoverflow.com/questions/464864/python-code-to-pick-out-all-possible-combinations-from-a-list
     '''
     results = {}
-    i=0
-    tr_data, ts_data = train_ts_data(data)
+    #-- split data into training data and testing data
+    tr_data, ts_data = split_tr_ts(data)
 
     ## Create numpy arrays
     values_array = tr_data['ENTRIESn_hourly'].values
@@ -187,7 +188,8 @@ def feature_testing(data, all_features, dummy_vars = None):
 
     start_for_time = time.time()
 
-    for L in range(1, 8):
+    for L in range(frange[0],frange[1]+1):
+
         for subset in combinations(all_features, L):
             start_time = time.time()
             # print('starting test at ' + str(start_time))
@@ -203,17 +205,17 @@ def feature_testing(data, all_features, dummy_vars = None):
             #-- calculate r** using ts_data
             predictions = (test_feature_array*params).sum(axis=1) + intercept
             r_squared = compute_r_squared(test_values_array, predictions)
+            print('r_squared: '+str(r_squared))
 
             #-- end time
             elapsed_time = time.time() - start_time
-            # print('ending test at ' + str(time.time()) +'/n')
+            print('time it took: ' + str(elapsed_time) +'\n')
 
             #-- save results in dict
-            results[i] = [r_squared, [features], [intercept, params.tolist()], params_names, elapsed_time]
-            i+=1
+            results[tuple(features)] = [r_squared, features, [intercept, params.tolist()], params_names, elapsed_time]
 
             #-- check amount of time spent
-            if time.time()-start_for_time > 3600:
+            if time.time()-start_for_time > t_limit:
                 print('stoped early')
                 return results
 
