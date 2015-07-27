@@ -174,13 +174,11 @@ def make_feature_arrays(tr_data, ts_data, features, dummy_vars):
 
     return tr_feat_dt.values, ts_feat_dt.values, tr_feat_dt.columns.tolist()
 
-def feature_testing(data, all_features, dummy_vars = None, frange=(5, 8), t_limit=10000):
+def feature_testing(tr_data, ts_data, all_features, dummy_vars = None, frange=(5, 8), t_limit=10000):
     '''
     ref: http://stackoverflow.com/questions/464864/python-code-to-pick-out-all-possible-combinations-from-a-list
     '''
     results = {}
-    #-- split data into training data and testing data
-    tr_data, ts_data = split_tr_ts(data)
 
     ## Create numpy arrays
     values_array = tr_data['ENTRIESn_hourly'].values
