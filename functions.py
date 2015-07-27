@@ -7,6 +7,7 @@ import statsmodels.api as sm
 import sys
 from sklearn.linear_model import SGDRegressor
 from itertools import combinations
+import time
 
 
 def bar_plot_mean_Entries(data, feature, variable = 'ENTRIESn_hourly'):
@@ -184,10 +185,16 @@ def feature_testing(data, all_features, dummy_vars = None):
     values_array = tr_data['ENTRIESn_hourly'].values
     test_values_array = ts_data['ENTRIESn_hourly'].values
 
-    for L in range(1, len(all_features)+1):
-        for subset in combinations(all_features, L):
-            features = list(subset)
+    start_for_time = time.time()
 
+    for L in range(1, 8):
+        for subset in combinations(all_features, L):
+            start_time = time.time()
+            # print('starting test at ' + str(start_time))
+
+            #-- get arrays
+            features = list(subset)
+            # print(features)
             feature_array, test_feature_array, params_names = make_feature_arrays(tr_data, ts_data, features, dummy_vars)
 
             #-- generate predictions
@@ -196,9 +203,19 @@ def feature_testing(data, all_features, dummy_vars = None):
             #-- calculate r** using ts_data
             predictions = (test_feature_array*params).sum(axis=1) + intercept
             r_squared = compute_r_squared(test_values_array, predictions)
-            #-- append results to list
-            results[i] = [r_squared, [features], [intercept, params.tolist()], params_names]
+
+            #-- end time
+            elapsed_time = time.time() - start_time
+            # print('ending test at ' + str(time.time()) +'/n')
+
+            #-- save results in dict
+            results[i] = [r_squared, [features], [intercept, params.tolist()], params_names, elapsed_time]
             i+=1
+
+            #-- check amount of time spent
+            if time.time()-start_for_time > 3600:
+                print('stoped early')
+                return results
 
     return results
 
