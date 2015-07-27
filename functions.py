@@ -174,11 +174,10 @@ def make_feature_arrays(tr_data, ts_data, features, dummy_vars):
 
     return tr_feat_dt.values, ts_feat_dt.values, tr_feat_dt.columns.tolist()
 
-def feature_testing(tr_data, ts_data, all_features, dummy_vars = None, frange=(5, 8), t_limit=10000):
+def feature_testing(tr_data, ts_data, all_features, dummy_vars = None, frange=(5, 8), t_limit=10000, results={}):
     '''
     ref: http://stackoverflow.com/questions/464864/python-code-to-pick-out-all-possible-combinations-from-a-list
     '''
-    results = {}
 
     ## Create numpy arrays
     values_array = tr_data['ENTRIESn_hourly'].values
@@ -196,27 +195,31 @@ def feature_testing(tr_data, ts_data, all_features, dummy_vars = None, frange=(5
             feature_array, test_feature_array, params_names = make_feature_arrays(tr_data, ts_data, features, dummy_vars)
 
             #-- generate predictions
-            intercept, params = OLS_linear_regression(feature_array, values_array)
+            try:
+                intercept, params = OLS_linear_regression(feature_array, values_array)
+                params_list = params.tolist()
 
-            #-- calculate r** using ts_data
-            predictions = (test_feature_array*params).sum(axis=1) + intercept
-            r_squared = compute_r_squared(test_values_array, predictions)
-            print(', r_squared: '+str(r_squared), end='')
+                #-- calculate r** using ts_data
+                predictions = (test_feature_array*params).sum(axis=1) + intercept
+                r_squared = compute_r_squared(test_values_array, predictions)
+                print(', r_squared: '+str(r_squared), end='')
+            except:
+                intercept = float('NaN')
+                params_list = float('NaN')
+                r_squared = 0
 
             #-- end time
             elapsed_time = time.time() - start_time
             print(', delta t: ' + str(elapsed_time))
 
             #-- save results in dict
-            results[tuple(features)] = [r_squared, features, [intercept, params.tolist()], params_names, elapsed_time]
+            results.update({tuple(features) : [r_squared, features, [intercept, params_list], params_names, elapsed_time]})
 
             #-- check amount of time spent
             if time.time()-start_for_time > t_limit:
                 print('stoped early')
-                return results
 
     print ('total time: ' + str(time.time()-start_for_time))
-    return results
 
 
 #####################
