@@ -187,14 +187,12 @@ def feature_testing(tr_data, ts_data, all_features, dummy_vars = None, frange=(5
     start_for_time = time.time()
 
     for L in range(frange[0],frange[1]+1):
-
         for subset in combinations(all_features, L):
             start_time = time.time()
-            # print('starting test at ' + str(start_time))
 
             #-- get arrays
             features = list(subset)
-            # print(features)
+            print(features, end='')
             feature_array, test_feature_array, params_names = make_feature_arrays(tr_data, ts_data, features, dummy_vars)
 
             #-- generate predictions
@@ -203,11 +201,11 @@ def feature_testing(tr_data, ts_data, all_features, dummy_vars = None, frange=(5
             #-- calculate r** using ts_data
             predictions = (test_feature_array*params).sum(axis=1) + intercept
             r_squared = compute_r_squared(test_values_array, predictions)
-            print('r_squared: '+str(r_squared))
+            print(', r_squared: '+str(r_squared), end='')
 
             #-- end time
             elapsed_time = time.time() - start_time
-            print('time it took: ' + str(elapsed_time) +'\n')
+            print(', delta t: ' + str(elapsed_time))
 
             #-- save results in dict
             results[tuple(features)] = [r_squared, features, [intercept, params.tolist()], params_names, elapsed_time]
@@ -217,6 +215,7 @@ def feature_testing(tr_data, ts_data, all_features, dummy_vars = None, frange=(5
                 print('stoped early')
                 return results
 
+    print ('total time: ' + str(time.time()-start_for_time))
     return results
 
 
