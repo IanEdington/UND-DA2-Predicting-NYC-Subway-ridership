@@ -174,7 +174,7 @@ def make_feature_arrays(tr_data, ts_data, features, dummy_vars):
 
     return tr_feat_dt.values, ts_feat_dt.values, tr_feat_dt.columns.tolist()
 
-def feature_testing(tr_data, ts_data, all_features, dummy_vars = None, frange=(5, 8), t_limit=10000, results={}):
+def feature_testing(tr_data, ts_data, all_features, dummy_vars = None, frange=(5, 8), t_limit=10000, results={}, fixed_feat=[]):
     '''
     ref: http://stackoverflow.com/questions/464864/python-code-to-pick-out-all-possible-combinations-from-a-list
     '''
@@ -190,7 +190,7 @@ def feature_testing(tr_data, ts_data, all_features, dummy_vars = None, frange=(5
             start_time = time.time()
 
             #-- get arrays
-            features = list(subset)
+            features = fixed_feat + list(subset)
             print(features, end='')
             feature_array, test_feature_array, params_names = make_feature_arrays(tr_data, ts_data, features, dummy_vars)
 
