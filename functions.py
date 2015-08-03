@@ -220,7 +220,7 @@ def feature_testing(tr_data, ts_data, all_features, dummy_vars = None, frange=(5
                 print('stoped early')
 
     print ('total time: ' + str(time.time()-start_for_time))
-
+    return results
 
 #####################
 ### Visualization ###
