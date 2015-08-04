@@ -235,6 +235,37 @@ def plot_residuals(data, predictions):
     (data['ENTRIESn_hourly'] - predictions).hist(bins=20, range=(-10000,10000))
     return plt
 
+def barplot_day_week_vs_Entries(data, feature = 'day_week'):
+    '''
+    bar chart of ENTRIESn_hourly by UNIT
+    http://pandas.pydata.org/pandas-docs/stable/groupby.html
+    http://wiki.scipy.org/Cookbook/Matplotlib/BarCharts
+    '''
+    variable = 'ENTRIESn_hourly'
+
+    gby_UNIT_mean = data[[feature, variable]].groupby(feature).mean()
+    y_axis = gby_UNIT_mean[variable]
+
+    # Ploting figure
+    plt.figure()
+
+    xlocations = np.arange(len(y_axis))
+    width = 0.5
+    plt.bar(xlocations, y_axis, align='center', width=width, alpha=0.4)
+
+    plt.title('BAR plot of '+feature+' vs mean('+variable+')')
+    plt.xlabel(feature)
+
+    if feature == 'day_week':
+        days = ('Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat', 'Sun')
+        plt.xticks(xlocations, days)
+    else:
+        plt.xticks(xlocations, y_axis.index)
+
+    plt.ylabel(variable)
+    plt.show()
+    return plt
+
 def plot_weather_data(data):
     '''
     consume: turnstile_weather
