@@ -5,16 +5,16 @@
     import matplotlib.pyplot as plt
     from scipy.stats import probplot
     from importlib import reload
-    
+
     #-- show plots in notebook
     %matplotlib inline
-    
+
     #-- Import analysis functions
     import functions as func
-    
+
     #-- Read data into pandas from CSV
     data = pd.read_csv(r'turnstile_weather_v2.csv')
-    
+
     # One other derived feature to explore (hour of day of week):
     data['hour_day_week'] = data['day_week']*100 + data['hour']
 
@@ -51,10 +51,16 @@ The Mann-Whitney U test was used to determine if ridership on days where there w
 ####Did you use a one-tail or a two-tail P value?
 I used two-tailed P values in order to determine directionality.
 ####What is the null hypothesis?
-Ridership does not change based on if it’s raining or not that day.
+The Mann-Whitney U test (also known as Wilcoxon rank-sum test)
+is a non-parametric test that can be used to test, for two populations
+with unknown distributions, if we draw randomly from each distribution,
+whether one distribution is more likely to generate a higher value than
+the other. Stated in mathematical terms, given random draws x from
+population X and y from population Y, the standard two-tailed
+hypotheses are as follows:
 
-**H<sub>0</sub>: μ<sub>rain</sub> = μ<sub>no rain</sub><br/>
-H<sub>0</sub>: μ<sub>fog</sub> = μ<sub>no fog</sub>**
+**H<sub>0</sub>: P(x > y) = 0.5<br/>
+H<sub>1</sub>: P(x > y) ≠ 0.5**
 
 ####What is your p-critical value?
 0.05
@@ -84,17 +90,17 @@ We can see based on the histograms for both rain and fog that the distributions 
     rain = data[data.rain == 1]['ENTRIESn_hourly']
     no_fog = data[data.fog == 0]['ENTRIESn_hourly']
     fog = data[data.fog == 1]['ENTRIESn_hourly']
-    
+
     #-- Test selection: make a hist of the data
     func.hist_MWW_suitability(no_rain, rain, rORf='rain').show()
     func.hist_MWW_suitability(no_fog, fog, rORf='fog').show()
 
 
-![png](output_6_0.png)
+![png](refs/figs/output_6_0.png)
 
 
 
-![png](output_6_1.png)
+![png](refs/figs/output_6_1.png)
 
 
 ####1.3 What results did you get from this statistical test? P-values and the means for each of the two samples under test.
@@ -103,7 +109,7 @@ We can see based on the histograms for both rain and fog that the distributions 
     #-- compare Rain and Fog using Mann-Whitney statistic
     MWU_rf = {'rain': list(func.mann_whitney_plus_means(no_rain, rain)),
             'fog': list(func.mann_whitney_plus_means(no_fog, fog))}
-    
+
     print(pd.DataFrame(MWU_rf, index= ['mean with ____',
                                        'mean without ____',
                                        'Mann-Whitney U-statistic',
@@ -145,10 +151,10 @@ UNIT, latitude, longitude, weather_lat, and weather_lon can be eliminated as fea
 
     # split data into training data and testing data
     tr_data, ts_data = func.split_tr_ts(data)
-    
+
     # initialize results dict
     results = {}
-    
+
     # Features to use as dummy variables
     dummy_vars = ['hour', 'day_week', 'weekday', 'hour_day_week', 'station', 'conds']
 
@@ -166,7 +172,7 @@ It was found that when hour, day_week, and hour_day_week were all in the same fe
     #-- Results for feature without hour, day_week:
     features = ['hour_day_week', 'weekday', 'station', 'conds', 'fog', 'precipi', 'pressurei', 'rain', 'tempi', 'wspdi', 'meanprecipi', 'meanpressurei', 'meantempi', 'meanwspdi']
     func.feature_testing(tr_data, ts_data, features, dummy_vars, frange=(1,2), results=results)
-    
+
     #-- Results for feature without hour_day_week:
     features = ['hour', 'day_week', 'weekday', 'station', 'conds', 'fog', 'precipi', 'pressurei', 'rain', 'tempi', 'wspdi', 'meanprecipi', 'meanpressurei', 'meantempi', 'meanwspdi']
     func.feature_testing(tr_data, ts_data, features, dummy_vars, frange=(1,2), results=results)
@@ -184,7 +190,7 @@ It was found that when hour, day_week, and hour_day_week were all in the same fe
     station       wspdi    0.3309052
 
 
-#####Create 
+#####Create
 
 #####Testing top 10 features chosing 7 or 8 parameters
 
@@ -212,11 +218,11 @@ It was found that when hour, day_week, and hour_day_week were all in the same fe
 
 
     features = ['hour_day_week', 'station', 'meantempi', 'conds', 'pressurei', 'meanpressurei', 'meanwspdi', 'fog']
-    
+
     values_array = data['ENTRIESn_hourly'].values
-    
+
     feature_array, test_feature_array, params_names = func.make_feature_arrays(data, data, features, dummy_vars)
-    
+
     intercept, params = func.OLS_linear_regression(feature_array, values_array)
     predictions = (feature_array*params).sum(axis=1) + intercept
     r_squared = func.compute_r_squared(values_array, predictions)
@@ -256,13 +262,13 @@ R^2 does not tell us if we have the right model, only how much of the variation 
 
 
     # figure of qqplot
-    
+
     residuals = values_array - predictions
     probplot(residuals, plot=plt)
     plt.show()
 
 
-![png](output_36_0.png)
+![png](refs/figs/output_36_0.png)
 
 
 ###Section 3. Visualization
@@ -277,17 +283,17 @@ In these histograms we can see that the data subset of Rain==0 (no rain) and Rai
     rain = data[data.rain == 1]['ENTRIESn_hourly']
     no_fog = data[data.fog == 0]['ENTRIESn_hourly']
     fog = data[data.fog == 1]['ENTRIESn_hourly']
-    
+
     #-- Test selection: make a hist of the data
     func.hist_MWW_suitability(no_rain, rain, rORf='rain').show()
     func.hist_MWW_suitability(no_fog, fog, rORf='fog').show()
 
 
-![png](output_39_0.png)
+![png](refs/figs/output_39_0.png)
 
 
 
-![png](output_39_1.png)
+![png](refs/figs/output_39_1.png)
 
 
 ####3.2 Bar plot of Ridership by day-of-week and Ridership by hour of day
@@ -298,11 +304,11 @@ From these bar plots we can see that there are certain peak hours of the day and
     plt3_2_2 = func.barplot_day_week_vs_Entries(data, feature = 'hour')
 
 
-![png](output_41_0.png)
+![png](refs/figs/output_41_0.png)
 
 
 
-![png](output_41_1.png)
+![png](refs/figs/output_41_1.png)
 
 
 ###Section 4. Conclusion
